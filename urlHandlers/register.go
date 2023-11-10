@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"01.kood.tech/git/jsaar/forum/cleanData"
+	"01.kood.tech/git/jsaar/forum/dbconnections"
 	"01.kood.tech/git/jsaar/forum/validateData"
 )
 
@@ -56,9 +57,21 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 	email := cleanData.CleanEmail(formDataEmail)
 	password := formDataPassword1
 
-	fmt.Println(username)
-	fmt.Println(email)
-	fmt.Println(password)
+	userNameOk, userEmailOk := dbconnections.RegisterUser(username, email, password)
+	if userNameOk {
+		executeErr := template.Execute(w, "Username allready exists!")
+		if executeErr != nil {
+			fmt.Println("Template error: ", executeErr)
+		}
+		return
+	}
+	if userEmailOk {
+		executeErr := template.Execute(w, "Email allready exists!")
+		if executeErr != nil {
+			fmt.Println("Template error: ", executeErr)
+		}
+		return
+	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return
