@@ -14,6 +14,10 @@ var PORT = "8080"
 
 func main() {
 	database.Engine()
+
+	staticFiles := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", staticFiles))
+
 	http.HandleFunc("/", urlHandlers.HandleIndex)
 	http.HandleFunc("/register", urlHandlers.HandleRegister)
 

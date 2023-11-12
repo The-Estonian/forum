@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+* {
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: 'Roboto', cursive;
+}
+
+@mixin flexRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flexCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+body {
+  background-image: url('../img/landscape.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.container {
+  @include flexCol;
+  height: 100vh;
+  &_menu {
+    top: 0;
+    padding: 1rem;
+    margin-bottom: auto;
+    a {
+      color: white;
+      border-radius: 0.1rem;
+      margin: 0.25rem;
+      width: 10rem;
+      padding: 1rem;
+      box-shadow: rgba(255, 255, 255, 0.568) 0px 5px 15px;
+      text-decoration: none;
+    }
+  }
+  &_register{
+    @include flexCol;
+  }
+}

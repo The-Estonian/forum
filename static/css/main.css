@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+* {
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: "Roboto", cursive;
+}
+
+body {
+  background-image: url("../img/landscape.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.container_menu {
+  top: 0;
+  padding: 1rem;
+  margin-bottom: auto;
+}
+.container_menu a {
+  color: white;
+  border-radius: 0.1rem;
+  margin: 0.25rem;
+  width: 10rem;
+  padding: 1rem;
+  box-shadow: rgba(255, 255, 255, 0.568) 0px 5px 15px;
+  text-decoration: none;
+}
+.container_register {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}/*# sourceMappingURL=main.css.map */
