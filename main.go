@@ -20,6 +20,7 @@ func main() {
 
 	http.HandleFunc("/", urlHandlers.HandleIndex)
 	http.HandleFunc("/register", urlHandlers.HandleRegister)
+	http.HandleFunc("/login", urlHandlers.HandleLogin)
 
 	fmt.Println("Server hosted at: http://localhost:" + PORT)
 	fmt.Println("To Kill Server press Ctrl+C")
