@@ -1,4 +1,4 @@
-module 01.kood.tech/git/jsaar/forum
+module forum
 
 go 1.21.1
 

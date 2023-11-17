@@ -5,9 +5,9 @@ import (
 	"html/template"
 	"net/http"
 
-	"01.kood.tech/git/jsaar/forum/cleanData"
-	"01.kood.tech/git/jsaar/forum/dbconnections"
-	"01.kood.tech/git/jsaar/forum/validateData"
+	"forum/cleanData"
+	"forum/dbconnections"
+	"forum/validateData"
 )
 
 func HandleRegister(w http.ResponseWriter, r *http.Request) {

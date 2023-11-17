@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"01.kood.tech/git/jsaar/forum/dbconnections"
+	"forum/dbconnections"
 )
 
 func fileExists(filename string) bool {

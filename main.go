@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"01.kood.tech/git/jsaar/forum/database"
-	"01.kood.tech/git/jsaar/forum/urlHandlers"
-	"01.kood.tech/git/jsaar/forum/validateData"
+	"forum/database"
+	"forum/urlHandlers"
+	"forum/validateData"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -23,7 +23,7 @@ func main() {
 
 	fmt.Println("Server hosted at: http://localhost:" + PORT)
 	fmt.Println("To Kill Server press Ctrl+C")
-	
+
 	err := http.ListenAndServe(":"+PORT, nil)
 	validateData.CheckErr(err)
 }
