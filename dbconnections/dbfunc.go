@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"01.kood.tech/git/jsaar/forum/validateData"
+	"forum/validateData"
 )
 
 func CreateDB() {
