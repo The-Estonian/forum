@@ -46,5 +46,18 @@ body {
   }
   &_register{
     @include flexCol;
+    align-items: end;
+    label {
+      @include flexCol;
+      span{
+        color: white;
+      }
+    }
+    margin-bottom: auto;
+  }
+  input[type=submit] {
+    padding: 0.5rem;
+    margin: auto;
+    margin-top: 0.5rem;
   }
 }

@@ -38,4 +38,20 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  align-items: end;
+  margin-bottom: auto;
+}
+.container_register label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.container_register label span {
+  color: white;
+}
+.container input[type=submit] {
+  padding: 0.5rem;
+  margin: auto;
+  margin-top: 0.5rem;
 }/*# sourceMappingURL=main.css.map */
