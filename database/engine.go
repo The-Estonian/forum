@@ -20,8 +20,8 @@ func Engine() {
 		fmt.Println("Did not find the Database! Starting regeneration!")
 		dbconnections.CreateDB()
 		fmt.Println("Database Created!")
-		dbconnections.CreateTables()
-		fmt.Println("Tables Created!")
-		fmt.Println("Generation Successfull!")
+		dbconnections.CreateUsers()
+		fmt.Println("User Table Created!")
+		fmt.Println("Full Database Generation Successfull!")
 	}
 }
