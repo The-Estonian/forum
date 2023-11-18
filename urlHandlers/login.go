@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 
 	"forum/cleanData"
 	"forum/dbconnections"
@@ -48,7 +49,18 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	if dbconnections.LoginUser(username, formDataPassword) {
 		fmt.Println("USER LOGGED IN WITH RIGHT CREDENTIALS!")
 		id := uuid.New()
-		fmt.Println("User Cookie to be saved to DB and forward to Browser DB: ", id.String())
+		cookie, err := r.Cookie("UserCookie")
+		exp := time.Now().Add(10 * time.Second)
+		if err != nil {
+			cookie = &http.Cookie{
+				Name:     "UserCookie",
+				Value:    id.String(),
+				Path:     "/",
+				HttpOnly: true,
+				Expires:  exp,
+			}
+		}
+		http.SetCookie(w, cookie)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
