@@ -19,7 +19,6 @@ func checkValueFromDB(database *sql.DB, column string, valueToCheck string) bool
 func checkPassword(database *sql.DB, username string) string {
 	var returnString string
 	err := database.QueryRow("SELECT password FROM users WHERE username=?", username).Scan(&returnString)
-	fmt.Println(err)
 	if err != nil {
 		fmt.Println("User does not exist")
 		return ""
