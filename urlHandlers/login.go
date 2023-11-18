@@ -8,6 +8,8 @@ import (
 	"forum/cleanData"
 	"forum/dbconnections"
 	"forum/validateData"
+
+	"github.com/google/uuid"
 )
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +47,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	username := cleanData.CleanName(formDataUsername)
 	if dbconnections.LoginUser(username, formDataPassword) {
 		fmt.Println("USER LOGGED IN WITH RIGHT CREDENTIALS!")
+		id := uuid.New()
+		fmt.Println("User Cookie to be saved to DB and forward to Browser DB: ", id.String())
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
