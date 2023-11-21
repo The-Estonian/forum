@@ -7,25 +7,30 @@ import (
 	"forum/database"
 	"forum/urlHandlers"
 	"forum/validateData"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var PORT = "8080"
 
 func main() {
 	database.Engine()
-
+	mux := http.NewServeMux()
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: mux,
+	}
 	staticFiles := http.FileServer(http.Dir("./static"))
-	http.Handle("/static/", http.StripPrefix("/static/", staticFiles))
+	mux.Handle("/static/", http.StripPrefix("/static/", staticFiles))
 
-	http.HandleFunc("/", urlHandlers.HandleIndex)
-	http.HandleFunc("/register", urlHandlers.HandleRegister)
-	http.HandleFunc("/login", urlHandlers.HandleLogin)
-	http.HandleFunc("/forum", urlHandlers.HandleForum)
+	mux.HandleFunc("/", urlHandlers.HandleIndex)
+	mux.HandleFunc("/register", urlHandlers.HandleRegister)
+	mux.HandleFunc("/login", urlHandlers.HandleLogin)
+	mux.HandleFunc("/logout", urlHandlers.HandleLogout)
+	mux.HandleFunc("/forum", urlHandlers.HandleForum)
 
-	fmt.Println("Server hosted at: http://localhost:" + PORT)
+	fmt.Println("Server hosted at: http://localhost:" + "8080")
 	fmt.Println("To Kill Server press Ctrl+C")
 
-	err := http.ListenAndServe(":"+PORT, nil)
+	err := server.ListenAndServe()
 	validateData.CheckErr(err)
 }
