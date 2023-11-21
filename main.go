@@ -22,11 +22,12 @@ func main() {
 	staticFiles := http.FileServer(http.Dir("./static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", staticFiles))
 
-	mux.HandleFunc("/", urlHandlers.HandleIndex)
 	mux.HandleFunc("/register", urlHandlers.HandleRegister)
 	mux.HandleFunc("/login", urlHandlers.HandleLogin)
 	mux.HandleFunc("/logout", urlHandlers.HandleLogout)
-	mux.HandleFunc("/forum", urlHandlers.HandleForum)
+	mux.HandleFunc("/", urlHandlers.HandleForum)
+	mux.HandleFunc("/post", urlHandlers.HandlePost)
+
 
 	fmt.Println("Server hosted at: http://localhost:" + "8080")
 	fmt.Println("To Kill Server press Ctrl+C")

@@ -57,7 +57,6 @@ func CheckHash(db *sql.DB, hash string) string {
 }
 
 func CheckValueFromDB(db *sql.DB, column string, valueToCheck string) bool {
-
 	newUsername := db.QueryRow("SELECT "+column+" FROM users WHERE "+column+"=?", valueToCheck).Scan(&valueToCheck)
 	trigger := false
 	if newUsername == nil {
@@ -89,4 +88,18 @@ func GetAllPosts(db *sql.DB) []structs.Post {
 		allPosts = append(allPosts, post)
 	}
 	return allPosts
+}
+
+// Testing
+func InsertPost(db *sql.DB, data string, id string) {
+
+	// _, err := db.Exec("INSERT INTO categories (category) VALUES (?)", "test")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	_, err := db.Exec("INSERT INTO posts (category, user, post) VALUES (?, ?, ?)", 1, id, data)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

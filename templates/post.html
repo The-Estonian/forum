@@ -10,9 +10,6 @@
     <div class="container">
       <div class="container_menu">
         <a href="/">
-          <span>Home</span>
-        </a>
-        <a href="/forum">
           <span>Forum</span>
         </a>
         <a href="/login">
@@ -25,7 +22,25 @@
           <span>Logout</span>
         </a>
       </div>
-      <div class="container_content">Starting page!</div>
+      <div class="container_content">
+        <form method="post" action="/post" class="container_register">
+          {{range $item := .}}
+          <span>{{$item.Category}}</span>
+          <input
+            type="checkbox"
+            id="asd"
+            name="asd"
+            value="asd"
+          />
+          {{end}}
+          <label for="post">
+            <span>Data</span>
+            <input type="text" name="post" id="createPost" />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+        <p>{{.}}</p>
+      </div>
     </div>
   </body>
 </html>

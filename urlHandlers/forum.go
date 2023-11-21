@@ -7,6 +7,7 @@ import (
 	"forum/validateData"
 	"html/template"
 	"net/http"
+	"strings"
 )
 
 func HandleForum(w http.ResponseWriter, r *http.Request) {
@@ -15,30 +16,16 @@ func HandleForum(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Template not found!"+err.Error(), http.StatusInternalServerError)
 	}
 
-	cookie, err := r.Cookie("UserCookie")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	if r.URL.Path != "/" && r.URL.Path != "/register" && r.URL.Path != "/locations" && !strings.HasPrefix(r.URL.Path, "/locations") {
+		http.Error(w, "Bad Request: 404", http.StatusNotFound)
 		return
 	}
 
 	db, err := sql.Open("sqlite3", "./database/forum.db")
 	validateData.CheckErr(err)
 	defer db.Close()
-	data := "Currently logged in user ID: " + dbconnections.CheckHash(db, cookie.Value)
 
-	if r.Method != http.MethodPost {
-		template.Execute(w, nil)
-		return
-	}
-
-	inputData := r.FormValue("data")
-	fmt.Println("INPUT DATA: ", inputData)
-
-	for _, v := range dbconnections.GetAllPosts(db) {
-		fmt.Println(v)
-	}
-
-	executeErr := template.Execute(w, data)
+	executeErr := template.Execute(w, dbconnections.GetAllPosts(db))
 	if executeErr != nil {
 		fmt.Println("Template error: ", executeErr)
 	}

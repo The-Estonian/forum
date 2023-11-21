@@ -10,9 +10,6 @@
     <div class="container">
       <div class="container_menu">
         <a href="/">
-          <span>Home</span>
-        </a>
-        <a href="/forum">
           <span>Forum</span>
         </a>
         <a href="/login">
@@ -24,16 +21,14 @@
         <a href="/logout">
           <span>Logout</span>
         </a>
+        <a href="/post">
+          <span>Create Post</span>
+        </a>
       </div>
       <div class="container_content">
-        <form method="post" action="/forum" class="container_register">
-        <label for="data">
-          <span>Data</span>
-          <input type="text" name="data" id="data" />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
-        <p>{{.}}</p>
+        {{range $item := .}}
+        <p>{{$item}}</p>
+        {{end}}
       </div>
     </div>
   </body>

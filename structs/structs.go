@@ -7,3 +7,8 @@ type Post struct{
 	Post string
 	Created string
 }
+
+type Category struct{
+	Id string
+	Category string
+}

@@ -58,4 +58,7 @@ body {
 .container p {
   color: white;
   margin: auto;
+}
+.container_content {
+  margin-bottom: auto;
 }/*# sourceMappingURL=main.css.map */
