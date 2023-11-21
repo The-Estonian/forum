@@ -21,8 +21,20 @@
         <a href="/register">
           <span>Register</span>
         </a>
+        <a href="/logout">
+          <span>Logout</span>
+        </a>
       </div>
-      <div class="container_content">{{.}}</div>
+      <div class="container_content">
+        <form method="post" action="/forum" class="container_register">
+        <label for="data">
+          <span>Data</span>
+          <input type="text" name="data" id="data" />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+        <p>{{.}}</p>
+      </div>
     </div>
   </body>
 </html>
