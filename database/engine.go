@@ -22,6 +22,14 @@ func Engine() {
 		fmt.Println("Database Created!")
 		dbconnections.CreateUsers()
 		fmt.Println("User Table Created!")
-		fmt.Println("Full Database Generation Successfull!")
+		dbconnections.CreateSessions()
+		fmt.Println("Session hash Table Created!")
+		dbconnections.CreateCategories()
+		fmt.Println("Categories Table Created!")
+		dbconnections.CreateLikes()
+		fmt.Println("Likes Table Created!")
+		dbconnections.CreatePosts()
+		fmt.Println("Posts Table Created!")
+		fmt.Println("Full Database Regeneration Successfull!")
 	}
 }
