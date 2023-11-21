@@ -1,7 +1,10 @@
 package urlHandlers
 
 import (
+	"database/sql"
 	"fmt"
+	"forum/dbconnections"
+	"forum/validateData"
 	"html/template"
 	"net/http"
 )
@@ -18,7 +21,24 @@ func HandleForum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	executeErr := template.Execute(w, cookie.Expires)
+	db, err := sql.Open("sqlite3", "./database/forum.db")
+	validateData.CheckErr(err)
+	defer db.Close()
+	data := "Currently logged in user ID: " + dbconnections.CheckHash(db, cookie.Value)
+
+	if r.Method != http.MethodPost {
+		template.Execute(w, nil)
+		return
+	}
+
+	inputData := r.FormValue("data")
+	fmt.Println("INPUT DATA: ", inputData)
+
+	for _, v := range dbconnections.GetAllPosts(db) {
+		fmt.Println(v)
+	}
+
+	executeErr := template.Execute(w, data)
 	if executeErr != nil {
 		fmt.Println("Template error: ", executeErr)
 	}

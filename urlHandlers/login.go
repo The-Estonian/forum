@@ -1,6 +1,7 @@
 package urlHandlers
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -46,21 +47,21 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username := cleanData.CleanName(formDataUsername)
-	if dbconnections.LoginUser(username, formDataPassword) {
-		fmt.Println("USER LOGGED IN WITH RIGHT CREDENTIALS!")
+	db, err := sql.Open("sqlite3", "./database/forum.db")
+	validateData.CheckErr(err)
+	defer db.Close()
+	if dbconnections.LoginUser(db, username, formDataPassword) {
 		id := uuid.New()
-		cookie, err := r.Cookie("UserCookie")
-		exp := time.Now().Add(10 * time.Second)
-		if err != nil {
-			cookie = &http.Cookie{
-				Name:     "UserCookie",
-				Value:    id.String(),
-				Path:     "/",
-				HttpOnly: true,
-				Expires:  exp,
-			}
-		}
+		exp := time.Now().Add(10 * time.Minute)
+		cookie := &http.Cookie{
+			Name:     "UserCookie",
+			Value:    id.String(),
+			Path:     "/",
+			HttpOnly: true,
+			Expires:  exp}
 		http.SetCookie(w, cookie)
+		dbconnections.ApplyHash(db, dbconnections.GetID(db, username), id.String())
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
