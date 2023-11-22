@@ -31,13 +31,8 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	if r.Method != http.MethodPost {
-		template.Execute(w, nil)
-		return
-	}
 	var allCat []structs.Category
-	rows, err := db.Query("SELECT * FROM categories")
-	fmt.Println(err)
+	rows, _ := db.Query("SELECT * FROM category")
 	for rows.Next() {
 		var cat structs.Category
 		if err := rows.Scan(&cat.Id, &cat.Category); err != nil {
@@ -45,14 +40,15 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 		}
 		allCat = append(allCat, cat)
 	}
-	for _, v := range allCat {
-		fmt.Println(v.Category)
 
+	if r.Method != http.MethodPost {
+		template.Execute(w, allCat)
+		return
 	}
+	r.ParseForm()
 
-	inputData := r.FormValue("post") //kontrollida üle mis nimi
 
-	dbconnections.InsertPost(db, inputData, dbconnections.CheckHash(db, cookie.Value))
+	dbconnections.InsertMessage(db, r.Form, dbconnections.CheckHash(db, cookie.Value))
 
 	template.Execute(w, allCat)
 }

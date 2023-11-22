@@ -25,21 +25,24 @@
       <div class="container_content">
         <form method="post" action="/post" class="container_register">
           {{range $item := .}}
-          <span>{{$item.Category}}</span>
-          <input
-            type="checkbox"
-            id="asd"
-            name="asd"
-            value="asd"
-          />
+          <label for="{{$item.Category}}" id="{{$item.Id}}">
+            <p>{{$item.Category}}</p>
+            <input
+              type="checkbox"
+              name="{{$item.Id}}"
+            />
+          </label>
           {{end}}
-          <label for="post">
-            <span>Data</span>
-            <input type="text" name="post" id="createPost" />
+          <label for="title">
+            <span>Title</span>
+            <input type="text" name="title" />
+          </label>
+          <label for="message">
+            <span>Message</span>
+            <input type="text" name="message" />
           </label>
           <input type="submit" value="Submit" />
         </form>
-        <p>{{.}}</p>
       </div>
     </div>
   </body>

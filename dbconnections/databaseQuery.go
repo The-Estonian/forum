@@ -3,6 +3,7 @@ package dbconnections
 import (
 	"database/sql"
 	"fmt"
+	"net/url"
 
 	"forum/structs"
 	"forum/validateData"
@@ -91,15 +92,33 @@ func GetAllPosts(db *sql.DB) []structs.Post {
 }
 
 // Testing
-func InsertPost(db *sql.DB, data string, id string) {
+func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
 
-	// _, err := db.Exec("INSERT INTO categories (category) VALUES (?)", "test")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	var inputTitle string
+	var inputMessage string
+	var catArray []string
 
-	_, err := db.Exec("INSERT INTO posts (category, user, post) VALUES (?, ?, ?)", 1, id, data)
+	for key, value := range userForm {
+		if key == "title" {
+			inputTitle = value[0]
+		} else if key == "message" {
+			inputMessage = value[0]
+		} else {
+			catArray = append(catArray, key)
+		}
+	}
+
+	var data int
+	err := db.QueryRow("INSERT INTO posts (title, user, post) VALUES (?, ?, ?) RETURNING id", inputTitle, userId, inputMessage).Scan(&data)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	for _, v := range catArray {
+		_, err = db.Exec("INSERT INTO post_category_list (post_category, post_id) VALUES (?, ?)", v, data)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }
+
