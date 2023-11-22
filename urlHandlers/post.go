@@ -26,10 +26,10 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if len(dbconnections.CheckHash(db, cookie.Value)) > 0 {
-	// 	http.Redirect(w, r, "/login", http.StatusSeeOther)
-	// 	return
-	// }
+	if !dbconnections.HashInDatabase(db, cookie.Value) {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 
 	var allCat []structs.Category
 	rows, _ := db.Query("SELECT * FROM category")

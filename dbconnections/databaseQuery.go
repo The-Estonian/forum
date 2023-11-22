@@ -57,6 +57,19 @@ func CheckHash(db *sql.DB, hash string) string {
 	return user
 }
 
+// Testing hash
+func HashInDatabase(db *sql.DB, hash string) bool {
+	var user string
+	query := db.QueryRow("SELECT user FROM session WHERE hash=?", hash).Scan(&user)
+	if query != nil {
+		fmt.Println("HashInDatabase: didn't find user with that hash!")
+		fmt.Println("Error code: ", query)
+		return false
+	}
+	return true
+}
+
+
 func CheckValueFromDB(db *sql.DB, column string, valueToCheck string) bool {
 	newUsername := db.QueryRow("SELECT "+column+" FROM users WHERE "+column+"=?", valueToCheck).Scan(&valueToCheck)
 	trigger := false
@@ -121,4 +134,3 @@ func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
 		}
 	}
 }
-
