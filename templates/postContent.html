@@ -29,11 +29,12 @@
         <a href="/">
             <button class="back-button">Back to forum</button>
         </a>
-        <p>{{.Id}}</p>
-        <p>{{.User}}</p>
-        <p>{{.Post}}</p>
-        <p>{{.Created}}</p>
-        <form method="post" action="/postcontent?id={{.Id}}">
+        <p>{{.Post.Id}}</p>
+        <p>{{.Post.User}}</p>
+        <p>{{.Post.Title}}</p>
+        <p>{{.Post.Post}}</p>
+        <p>{{.Post.Created}}</p>
+        <form method="post" action="/postcontent?id={{.Post.Id}}">
             </label>
             <label for="createPostComment">
             <span>Create Comment</span>
@@ -41,6 +42,9 @@
             </label>
             <input type="submit" value="Submit" />
         </form>
+        {{range $item := .AllComments}}
+        <p>{{$item}}</p>
+        {{end}}
       </div>
     </div>
   </body>

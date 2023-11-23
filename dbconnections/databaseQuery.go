@@ -150,3 +150,18 @@ func InsertComment(db *sql.DB, postId string, commentatorId string, comment stri
 	}
 }
 
+func GetAllComments(db *sql.DB, data string) []structs.Comment {
+	var allComments []structs.Comment
+
+	allCommentsFromData, _ := db.Query("SELECT * FROM comments WHERE post_id=?", data)
+	for allCommentsFromData.Next() {
+		var comments structs.Comment
+		if err := allCommentsFromData.Scan(&comments.Id, &comments.PostId, &comments.UserId, &comments.Comment, &comments.Created); err != nil {
+			fmt.Println(err)
+		}
+		allComments = append(allComments, comments)
+	}
+
+	return allComments
+
+}

@@ -18,22 +18,37 @@ func fileExists(filename string) bool {
 func Engine() {
 	if !fileExists("./database/forum.db") {
 		fmt.Println("Did not find the Database! Starting regeneration!")
+		
 		dbconnections.CreateDB()
 		fmt.Println("Database Created!")
+
 		dbconnections.CreateUsers()
 		fmt.Println("User Table Created!")
+
+		dbconnections.CreateAccessRights()
+		fmt.Println("Access Rights Table Created!")
+
+		dbconnections.CreateUserAccess()
+		fmt.Println("User Access Table Created!")
+
 		dbconnections.CreateSessions()
 		fmt.Println("Session hash Table Created!")
+
 		dbconnections.CreateCategory()
 		fmt.Println("Category Table Created!")
+
 		dbconnections.CreatePostCategoryList()
 		fmt.Println("Post category list Table Created!")
+
 		dbconnections.CreateLikes()
 		fmt.Println("Likes Table Created!")
+
 		dbconnections.CreatePosts()
 		fmt.Println("Posts Table Created!")
+
 		dbconnections.CreateComments()
 		fmt.Println("Comments Table Created!")
+
 		fmt.Println("Full Database Regeneration Successfull!")
 	}
 }

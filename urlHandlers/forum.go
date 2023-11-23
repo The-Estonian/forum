@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"forum/dbconnections"
+	"forum/structs"
 	"forum/validateData"
 	"html/template"
 	"net/http"
@@ -24,8 +25,11 @@ func HandleForum(w http.ResponseWriter, r *http.Request) {
 	db, err := sql.Open("sqlite3", "./database/forum.db")
 	validateData.CheckErr(err)
 	defer db.Close()
-
-	executeErr := template.Execute(w, dbconnections.GetAllPosts(db))
+	m := structs.MegaData{
+		User:     structs.User{Id: "1", Username: "admin", Email: "asd@asd.com", UserAccess: "Bueno!"},
+		AllPosts: dbconnections.GetAllPosts(db),
+	}
+	executeErr := template.Execute(w, m)
 	if executeErr != nil {
 		fmt.Println("Template error: ", executeErr)
 	}

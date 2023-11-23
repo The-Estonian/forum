@@ -26,9 +26,10 @@
         </a>
       </div>
       <div class="container_content">
-        {{range $item := .}}
+        {{range $item := .AllPosts}}
         <a href="/postcontent?id={{$item.Id}}"><p>{{$item.Title}}</p></a>
         {{end}}
+        <p>CURRENT USER: {{.User}}</p>
       </div>
     </div>
   </body>

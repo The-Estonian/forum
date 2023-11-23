@@ -19,6 +19,27 @@ func CreateUsers() {
 	db, err := sql.Open("sqlite3", "./database/forum.db")
 	validateData.CheckErr(err)
 	db.Exec("CREATE TABLE `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(255) NOT NULL, `password` VARCHAR(255) NOT NULL, `email` VARCHAR(255) NOT NULL)")
+	db.Exec("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", "admin", "admin", "admin@hotmail.ee")
+	db.Close()
+}
+
+func CreateAccessRights() {
+	db, err := sql.Open("sqlite3", "./database/forum.db")
+	validateData.CheckErr(err)
+	db.Exec("CREATE TABLE `access_rights` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `access_rights` VARCHAR(255) NOT NULL)")
+	for _, v := range []string{"Guest", "User", "Moderator", "Admin"} {
+		_, err := db.Exec("INSERT INTO access_rights (access_rights) VALUES (?)", v)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func CreateUserAccess() {
+	db, err := sql.Open("sqlite3", "./database/forum.db")
+	validateData.CheckErr(err)
+	db.Exec("CREATE TABLE `user_access` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user` INTEGER NOT NULL REFERENCES users(id), `user_access` INTEGER NOT NULL REFERENCES access_rights(id))")
+	db.Exec("INSERT INTO user_access (user, user_access) VALUES (?, ?)", "1", "1")
 	db.Close()
 }
 
@@ -70,4 +91,3 @@ func CreateComments() {
 	database.Exec("CREATE TABLE `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `post_id` INTEGER NOT NULL REFERENCES posts(id), `user` INTEGER NOT NULL REFERENCES users(id), `comment` VARCHAR(255), `created` NOT NULL DEFAULT CURRENT_TIMESTAMP)")
 	database.Close()
 }
-
