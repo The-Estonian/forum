@@ -2,7 +2,7 @@ package structs
 
 type Post struct{
 	Id string
-	Category string
+	Title string
 	User string
 	Post string
 	Created string

@@ -27,10 +27,7 @@
           {{range $item := .}}
           <label for="{{$item.Category}}" id="{{$item.Id}}">
             <p>{{$item.Category}}</p>
-            <input
-              type="checkbox"
-              name="{{$item.Id}}"
-            />
+            <input type="checkbox" name="{{$item.Id}}" />
           </label>
           {{end}}
           <label for="title">

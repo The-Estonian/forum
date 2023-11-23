@@ -32,6 +32,8 @@ func Engine() {
 		fmt.Println("Likes Table Created!")
 		dbconnections.CreatePosts()
 		fmt.Println("Posts Table Created!")
+		dbconnections.CreateComments()
+		fmt.Println("Comments Table Created!")
 		fmt.Println("Full Database Regeneration Successfull!")
 	}
 }

@@ -63,3 +63,11 @@ func CreatePosts() {
 	database.Exec("CREATE TABLE `posts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` VARCHAR(255) NOT NULL, `user` INTEGER NOT NULL REFERENCES users(id), `post` VARCHAR(255), `created` NOT NULL DEFAULT CURRENT_TIMESTAMP)")
 	database.Close()
 }
+
+func CreateComments() {
+	database, err := sql.Open("sqlite3", "./database/forum.db")
+	validateData.CheckErr(err)
+	database.Exec("CREATE TABLE `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `post_id` INTEGER NOT NULL REFERENCES posts(id), `user` INTEGER NOT NULL REFERENCES users(id), `comment` VARCHAR(255), `created` NOT NULL DEFAULT CURRENT_TIMESTAMP)")
+	database.Close()
+}
+

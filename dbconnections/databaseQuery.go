@@ -69,7 +69,6 @@ func HashInDatabase(db *sql.DB, hash string) bool {
 	return true
 }
 
-
 func CheckValueFromDB(db *sql.DB, column string, valueToCheck string) bool {
 	newUsername := db.QueryRow("SELECT "+column+" FROM users WHERE "+column+"=?", valueToCheck).Scan(&valueToCheck)
 	trigger := false
@@ -95,7 +94,7 @@ func GetAllPosts(db *sql.DB) []structs.Post {
 	posts, _ := db.Query("SELECT * FROM posts")
 	for posts.Next() {
 		var post structs.Post
-		if err := posts.Scan(&post.Id, &post.Category, &post.User, &post.Post, &post.Created); err != nil {
+		if err := posts.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created); err != nil {
 			fmt.Println(err)
 			return allPosts
 		}
@@ -104,7 +103,16 @@ func GetAllPosts(db *sql.DB) []structs.Post {
 	return allPosts
 }
 
-// Testing
+func GetOnePost(db *sql.DB, data string) structs.Post {
+	posts := db.QueryRow("SELECT * FROM posts WHERE id=?", data)
+
+	var post structs.Post
+	if err := posts.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created); err != nil {
+		fmt.Println(err)
+	}
+	return post
+}
+
 func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
 
 	var inputTitle string
@@ -134,3 +142,11 @@ func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
 		}
 	}
 }
+
+func InsertComment(db *sql.DB, postId string, commentatorId string, comment string) {
+	_, err := db.Exec("INSERT INTO comments (post_id, user, comment) VALUES (?, ?, ?)", postId, commentatorId, comment)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+

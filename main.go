@@ -27,6 +27,7 @@ func main() {
 	mux.HandleFunc("/logout", urlHandlers.HandleLogout)
 	mux.HandleFunc("/", urlHandlers.HandleForum)
 	mux.HandleFunc("/post", urlHandlers.HandlePost)
+	mux.HandleFunc("/postcontent", urlHandlers.HandlePostContent)
 
 
 	fmt.Println("Server hosted at: http://localhost:" + "8080")

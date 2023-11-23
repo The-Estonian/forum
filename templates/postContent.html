@@ -26,12 +26,22 @@
         </a>
       </div>
       <div class="container_content">
-        {{range $item := .}}
-        <a href="/postcontent?id={{$item.Id}}"><p>{{$item.Title}}</p></a>
-        {{end}}
+        <a href="/">
+            <button class="back-button">Back to forum</button>
+        </a>
+        <p>{{.Id}}</p>
+        <p>{{.User}}</p>
+        <p>{{.Post}}</p>
+        <p>{{.Created}}</p>
+        <form method="post" action="/postcontent?id={{.Id}}">
+            </label>
+            <label for="createPostComment">
+            <span>Create Comment</span>
+            <input type="text" name="createPostComment" />
+            </label>
+            <input type="submit" value="Submit" />
+        </form>
       </div>
     </div>
   </body>
 </html>
-
-
