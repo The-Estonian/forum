@@ -19,6 +19,7 @@ func CreateUsers() {
 	db, err := sql.Open("sqlite3", "./database/forum.db")
 	validateData.CheckErr(err)
 	db.Exec("CREATE TABLE `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(255) NOT NULL, `password` VARCHAR(255) NOT NULL, `email` VARCHAR(255) NOT NULL)")
+	db.Exec("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", "guest", "55guest55", "guest@hotmail.ee")
 	db.Exec("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", "admin", "admin", "admin@hotmail.ee")
 	db.Close()
 }
@@ -40,6 +41,7 @@ func CreateUserAccess() {
 	validateData.CheckErr(err)
 	db.Exec("CREATE TABLE `user_access` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user` INTEGER NOT NULL REFERENCES users(id), `user_access` INTEGER NOT NULL REFERENCES access_rights(id))")
 	db.Exec("INSERT INTO user_access (user, user_access) VALUES (?, ?)", "1", "1")
+	db.Exec("INSERT INTO user_access (user, user_access) VALUES (?, ?)", "2", "4")
 	db.Close()
 }
 

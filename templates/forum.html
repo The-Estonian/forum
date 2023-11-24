@@ -12,14 +12,14 @@
         <a href="/">
           <span>Forum</span>
         </a>
-        {{if eq .User.UserAccess "Guest" }}
+        {{if eq .Access.AccessRight "1" }}
         <a href="/login">
           <span>Login</span>
         </a>
         <a href="/register">
           <span>Register</span>
         </a>
-        {{else if eq .User.UserAccess "User"}}
+        {{else if eq .Access.AccessRight "2"}}
         <a href="/logout">
           <span>Logout</span>
         </a>

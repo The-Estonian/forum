@@ -48,7 +48,7 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 
-	dbconnections.InsertMessage(db, r.Form, dbconnections.CheckHash(db, cookie.Value))
+	dbconnections.InsertMessage(db, r.Form, dbconnections.CheckHash(cookie.Value))
 
 	template.Execute(w, allCat)
 }

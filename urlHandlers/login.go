@@ -1,15 +1,13 @@
 package urlHandlers
 
 import (
-	"database/sql"
 	"fmt"
-	"html/template"
-	"net/http"
-	"time"
-
 	"forum/cleanData"
 	"forum/dbconnections"
 	"forum/validateData"
+	"html/template"
+	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -47,10 +45,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username := cleanData.CleanName(formDataUsername)
-	db, err := sql.Open("sqlite3", "./database/forum.db")
-	validateData.CheckErr(err)
-	defer db.Close()
-	if dbconnections.LoginUser(db, username, formDataPassword) {
+	if dbconnections.LoginUser(username, formDataPassword) {
 		id := uuid.New()
 		exp := time.Now().Add(10 * time.Minute)
 		cookie := &http.Cookie{
@@ -60,7 +55,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,
 			Expires:  exp}
 		http.SetCookie(w, cookie)
-		dbconnections.ApplyHash(db, dbconnections.GetID(db, username), id.String())
+		dbconnections.ApplyHash(dbconnections.GetID(username), id.String())
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return

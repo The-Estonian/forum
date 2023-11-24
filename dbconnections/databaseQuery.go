@@ -3,12 +3,21 @@ package dbconnections
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"forum/structs"
 	"forum/validateData"
 )
 
+// Open and Close database connection. Returns database connection.
+func DbConnection() *sql.DB {
+	db, err := sql.Open("sqlite3", "./database/forum.db")
+	validateData.CheckErr(err)
+	return db
+}
+
+// Register new user, add user values to users database. Returns true if user/email is database.
 func RegisterUser(db *sql.DB, username, email, password string) (bool, bool) {
 	usernameCheck := CheckValueFromDB(db, "username", username)
 	emailCheck := CheckValueFromDB(db, "email", email)
@@ -16,29 +25,39 @@ func RegisterUser(db *sql.DB, username, email, password string) (bool, bool) {
 		_, err := db.Exec("INSERT INTO users(username, password, email) VALUES(?, ?, ?)", username, password, email)
 		validateData.CheckErr(err)
 		fmt.Println("New user added to the DB")
+		SetAccessRight(GetID(username), "2")
+		fmt.Println("Access granted to user", GetID(username))
 	}
 	return usernameCheck, emailCheck
 }
 
-func LoginUser(db *sql.DB, username, password string) bool {
-	getPassword := CheckPassword(db, username)
+// Returns True if user inserted credentials are in database.
+func LoginUser(username, password string) bool {
+	getPassword := CheckPassword(username)
 	return getPassword == password
 }
 
+// Deletes Cookie from session database
 func LogoutUser(db *sql.DB, userID string) {
 	fmt.Println(userID)
 	_, err := db.Exec("DELETE FROM session WHERE user=?", userID)
 	validateData.CheckErr(err)
 }
 
-func ApplyHash(db *sql.DB, user, hash string) {
+// Applies Cookie in session database
+func ApplyHash(user, hash string) {
+	db := DbConnection()
 	datastream, err := db.Prepare("INSERT OR REPLACE INTO session(user, hash) VALUES(?, ?)")
+	defer db.Close()
 	validateData.CheckErr(err)
 	datastream.Exec(user, hash)
 }
 
-func GetID(db *sql.DB, username string) string {
+// Returns ID if username exists in the users database
+func GetID(username string) string {
+	db := DbConnection()
 	query := db.QueryRow("SELECT id FROM users WHERE username=?", username).Scan(&username)
+	defer db.Close()
 	if query != nil {
 		fmt.Println("Didn't find username with that name to return ID")
 		fmt.Println("Error code: ", query)
@@ -46,18 +65,60 @@ func GetID(db *sql.DB, username string) string {
 	return username
 }
 
-func CheckHash(db *sql.DB, hash string) string {
+// Returns All user info by user hash
+func GetUserInfo(id string) structs.User {
+	db := DbConnection()
+	var userInfo structs.User
+	var dump string
+	query := db.QueryRow("SELECT * FROM users WHERE id=?", id).Scan(&userInfo.Id, &userInfo.Username, &dump, &userInfo.Email)
+	dump = ""
+	defer db.Close()
+	if query != nil {
+		fmt.Println("Didn't find userId with that id")
+		fmt.Println("Error code: ", query)
+	}
+	return userInfo
+}
+
+// Returns the users access rights
+func GetAccessRight(id string) structs.AccessRights {
+	db := DbConnection()
+	var userAccess structs.AccessRights
+	query := db.QueryRow("SELECT user_access FROM user_access WHERE user=?", id).Scan(&userAccess.AccessRight)
+	defer db.Close()
+	if query != nil {
+		fmt.Println("Didn't find user with that id")
+		fmt.Println("Error code: ", query)
+	}
+	return userAccess
+}
+
+// Sets the users access rights
+func SetAccessRight(user string, access string) {
+	db := DbConnection()
+	_, err := db.Exec("INSERT INTO user_access (user, user_access) VALUES(?, ?)", user, access)
+	if err != nil {
+		fmt.Println("SetAccessRight")
+		fmt.Println("Error code: ", err)
+	}
+	defer db.Close()
+}
+
+// Returns UserID from session database
+func CheckHash(hash string) string {
+	db := DbConnection()
 	var user string
 	query := db.QueryRow("SELECT user FROM session WHERE hash=?", hash).Scan(&user)
+	defer db.Close()
 	if query != nil {
-		fmt.Println("Didn't find user with that hash!")
+		fmt.Println("CheckHash")
 		fmt.Println("Error code: ", query)
-		return ""
+		return "1"
 	}
 	return user
 }
 
-// Testing hash
+// Returns True if hash in database
 func HashInDatabase(db *sql.DB, hash string) bool {
 	var user string
 	query := db.QueryRow("SELECT user FROM session WHERE hash=?", hash).Scan(&user)
@@ -69,6 +130,7 @@ func HashInDatabase(db *sql.DB, hash string) bool {
 	return true
 }
 
+// Return True if value is in users database column
 func CheckValueFromDB(db *sql.DB, column string, valueToCheck string) bool {
 	newUsername := db.QueryRow("SELECT "+column+" FROM users WHERE "+column+"=?", valueToCheck).Scan(&valueToCheck)
 	trigger := false
@@ -79,9 +141,12 @@ func CheckValueFromDB(db *sql.DB, column string, valueToCheck string) bool {
 	return trigger
 }
 
-func CheckPassword(db *sql.DB, username string) string {
+// Returns password from users based on username. Hopefully encrypted.
+func CheckPassword(username string) string {
+	db := DbConnection()
 	var returnString string
 	err := db.QueryRow("SELECT password FROM users WHERE username=?", username).Scan(&returnString)
+	defer db.Close()
 	if err != nil {
 		fmt.Println("User does not exist")
 		return ""
@@ -89,9 +154,12 @@ func CheckPassword(db *sql.DB, username string) string {
 	return returnString
 }
 
-func GetAllPosts(db *sql.DB) []structs.Post {
+// Returns all rows in an array of structs from posts database
+func GetAllPosts() []structs.Post {
 	var allPosts []structs.Post
+	db := DbConnection()
 	posts, _ := db.Query("SELECT * FROM posts")
+	defer db.Close()
 	for posts.Next() {
 		var post structs.Post
 		if err := posts.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created); err != nil {
@@ -103,9 +171,11 @@ func GetAllPosts(db *sql.DB) []structs.Post {
 	return allPosts
 }
 
-func GetOnePost(db *sql.DB, data string) structs.Post {
+// Returns a struct that contains data from one row in post database
+func GetOnePost(data string) structs.Post {
+	db := DbConnection()
 	posts := db.QueryRow("SELECT * FROM posts WHERE id=?", data)
-
+	defer db.Close()
 	var post structs.Post
 	if err := posts.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created); err != nil {
 		fmt.Println(err)
@@ -113,6 +183,7 @@ func GetOnePost(db *sql.DB, data string) structs.Post {
 	return post
 }
 
+// Inserts into posts and post_category_list user inserted data
 func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
 
 	var inputTitle string
@@ -143,6 +214,7 @@ func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
 	}
 }
 
+// Inserts comments database user inserted comment and commentator userID
 func InsertComment(db *sql.DB, postId string, commentatorId string, comment string) {
 	_, err := db.Exec("INSERT INTO comments (post_id, user, comment) VALUES (?, ?, ?)", postId, commentatorId, comment)
 	if err != nil {
@@ -150,6 +222,7 @@ func InsertComment(db *sql.DB, postId string, commentatorId string, comment stri
 	}
 }
 
+// Returns all comments by post_id
 func GetAllComments(db *sql.DB, data string) []structs.Comment {
 	var allComments []structs.Comment
 
@@ -164,4 +237,34 @@ func GetAllComments(db *sql.DB, data string) []structs.Comment {
 
 	return allComments
 
+}
+
+func GetMegaDataValues(r *http.Request) structs.MegaData {
+	var userId string
+	cookie, err := r.Cookie("UserCookie")
+	if err != nil {
+		userId = "1"
+	} else {
+		userId = CheckHash(cookie.Value)
+	}
+
+	if len(r.URL.Query().Get("id")) > 0 {
+		fmt.Println("URL QUERY DATA LEN: ", len(r.URL.Query().Get("id")))
+		fmt.Println(r.URL.Query().Get("id"))
+		postId := r.URL.Query().Get("id")
+		m := structs.MegaData{
+			User:   GetUserInfo(userId),
+			Post:   GetOnePost(postId),
+			Access: GetAccessRight(userId),
+		}
+		return m
+	}
+
+	m := structs.MegaData{
+		User:     GetUserInfo(userId),
+		AllPosts: GetAllPosts(),
+		Access:   GetAccessRight(userId),
+	}
+
+	return m
 }

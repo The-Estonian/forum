@@ -21,7 +21,7 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	cookie, err := r.Cookie("UserCookie")
 	if err == nil {
-		hash := dbconnections.CheckHash(db, cookie.Value)
+		hash := dbconnections.CheckHash(cookie.Value)
 		fmt.Println(hash)
 		dbconnections.LogoutUser(db, hash)
 	}

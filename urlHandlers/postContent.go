@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"forum/dbconnections"
-	"forum/structs"
 	"forum/validateData"
 	"html/template"
 	"net/http"
@@ -32,23 +31,21 @@ func HandlePostContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postId := r.URL.Query().Get("id")
-	post := dbconnections.GetOnePost(db, postId)
+	// m := structs.MegaData{
+	// 	User:        structs.User{Id: "1", Username: "admin", Email: "asd@asd.com", UserAccess: "Bueno!"},
+	// 	Post:        post,
+	// 	AllComments: dbconnections.GetAllComments(db, postId),
+	// }
 
-	m := structs.MegaData{
-		User:        structs.User{Id: "1", Username: "admin", Email: "asd@asd.com", UserAccess: "Bueno!"},
-		Post:        post,
-		AllComments: dbconnections.GetAllComments(db, postId),
-	}
+	m := dbconnections.GetMegaDataValues(r)
 
 	if r.Method != http.MethodPost {
 		template.Execute(w, m)
 		return
 	}
-	commentatorId := dbconnections.CheckHash(db, cookie.Value)
 	comment := r.FormValue("createPostComment")
 
-	dbconnections.InsertComment(db, postId, commentatorId, comment)
+	dbconnections.InsertComment(db, m.Post.Id, m.User.Id, comment)
 
 	executeErr := template.Execute(w, m)
 	if executeErr != nil {
