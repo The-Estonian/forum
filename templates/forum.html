@@ -12,24 +12,28 @@
         <a href="/">
           <span>Forum</span>
         </a>
+        {{if eq .User.UserAccess "Guest" }}
         <a href="/login">
           <span>Login</span>
         </a>
         <a href="/register">
           <span>Register</span>
         </a>
+        {{else if eq .User.UserAccess "User"}}
         <a href="/logout">
           <span>Logout</span>
         </a>
+        
         <a href="/post">
           <span>Create Post</span>
         </a>
+        {{end}}
       </div>
       <div class="container_content">
         {{range $item := .AllPosts}}
         <a href="/postcontent?id={{$item.Id}}"><p>{{$item.Title}}</p></a>
         {{end}}
-        <p>CURRENT USER: {{.User}}</p>
+        <p>CURRENT USER: {{.User.Username}}</p>
       </div>
     </div>
   </body>

@@ -26,7 +26,7 @@ func HandleForum(w http.ResponseWriter, r *http.Request) {
 	validateData.CheckErr(err)
 	defer db.Close()
 	m := structs.MegaData{
-		User:     structs.User{Id: "1", Username: "admin", Email: "asd@asd.com", UserAccess: "Bueno!"},
+		User:     structs.User{Id: "1", Username: "admin", Email: "asd@asd.com", UserAccess: "User"},
 		AllPosts: dbconnections.GetAllPosts(db),
 	}
 	executeErr := template.Execute(w, m)
