@@ -17,8 +17,11 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Template not found!"+err.Error(), http.StatusInternalServerError)
 	}
+
+	m := dbconnections.GetMegaDataValues(r)
+
 	if r.Method != http.MethodPost {
-		template.Execute(w, nil)
+		template.Execute(w, m)
 		return
 	}
 
@@ -37,7 +40,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		dataValid = false
 	}
 	if !dataValid {
-		executeErr := template.Execute(w, errorLog)
+		m.Errors = errorLog
+		executeErr := template.Execute(w, m)
 		if executeErr != nil {
 			fmt.Println("Template error: ", executeErr)
 		}
@@ -45,6 +49,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username := cleanData.CleanName(formDataUsername)
+
 	if dbconnections.LoginUser(username, formDataPassword) {
 		id := uuid.New()
 		exp := time.Now().Add(10 * time.Minute)
@@ -60,7 +65,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	executeErr := template.Execute(w, "Username or Password incorrect")
+	m.Errors = append(m.Errors, "Username or Password incorrect")
+	executeErr := template.Execute(w, m)
 	if executeErr != nil {
 		fmt.Println("Template error: ", executeErr)
 	}

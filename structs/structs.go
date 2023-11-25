@@ -37,4 +37,5 @@ type MegaData struct {
 	AllPosts    []Post
 	AllComments []Comment
 	Access      AccessRights
+	Errors		[]string
 }

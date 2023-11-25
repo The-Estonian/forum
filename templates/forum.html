@@ -31,7 +31,7 @@
       </div>
       <div class="container_content">
         {{range $item := .AllPosts}}
-        <a href="/postcontent?id={{$item.Id}}"><p>{{$item.Title}}</p></a>
+        <a href="/postcontent?PostId={{$item.Id}}"><p>{{$item.Title}}</p></a>
         {{end}}
         <p>CURRENT USER: {{.User.Username}}</p>
       </div>

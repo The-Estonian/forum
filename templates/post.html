@@ -23,7 +23,7 @@
         <a href="/logout">
           <span>Logout</span>
         </a>
-        
+
         <a href="/post">
           <span>Create Post</span>
         </a>
@@ -31,10 +31,10 @@
       </div>
       <div class="container_content">
         <form method="post" action="/post" class="container_register">
-          {{range $item := .}}
-          <label for="{{$item.Category}}" id="{{$item.Id}}">
-            <p>{{$item.Category}}</p>
-            <input type="checkbox" name="{{$item.Id}}" />
+          {{range $item := .AllPosts}}
+          <label for="{{$item}}" id="{{$item}}">
+            <p>{{$item}}</p>
+            <input type="checkbox" name="{{$item}}" />
           </label>
           {{end}}
           <label for="title">

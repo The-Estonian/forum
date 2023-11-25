@@ -23,7 +23,7 @@
         <a href="/logout">
           <span>Logout</span>
         </a>
-        
+
         <a href="/post">
           <span>Create Post</span>
         </a>
@@ -40,7 +40,13 @@
         </label>
         <input type="submit" value="Submit" />
       </form>
-      <p>{{.}}</p>
+      <div class="container_errors">
+        {{if .Errors}} 
+        {{range $err := .Errors}}
+          <p>{{$err}}</p>
+        {{end}} 
+        {{end}}
+      </div>
     </div>
   </body>
 </html>

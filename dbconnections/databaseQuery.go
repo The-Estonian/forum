@@ -155,9 +155,14 @@ func CheckPassword(username string) string {
 }
 
 // Returns all rows in an array of structs from posts database
-func GetAllPosts() []structs.Post {
+func GetAllPosts(data string) []structs.Post {
 	var allPosts []structs.Post
 	db := DbConnection()
+	if len(data) > 0 {
+		fmt.Println("Get one post func GetOnePost")
+		allPosts = append(allPosts, GetOnePost(data))
+		return allPosts
+	}
 	posts, _ := db.Query("SELECT * FROM posts")
 	defer db.Close()
 	for posts.Next() {
@@ -214,12 +219,21 @@ func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
 	}
 }
 
-// Inserts comments database user inserted comment and commentator userID
-func InsertComment(db *sql.DB, postId string, commentatorId string, comment string) {
+// Inserts into comments database user inserted comment and commentator userID
+func InsertComment(postId string, commentatorId string, comment string) {
+	db := DbConnection()
 	_, err := db.Exec("INSERT INTO comments (post_id, user, comment) VALUES (?, ?, ?)", postId, commentatorId, comment)
+	defer db.Close()
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func PostComment(r *http.Request, m structs.MegaData) {
+	postId := r.URL.Query().Get("id")
+	commentatorId := m.User.Id
+	comment := r.FormValue("createPostComment")
+	InsertComment(postId, commentatorId, comment)
 }
 
 // Returns all comments by post_id
@@ -248,21 +262,10 @@ func GetMegaDataValues(r *http.Request) structs.MegaData {
 		userId = CheckHash(cookie.Value)
 	}
 
-	if len(r.URL.Query().Get("id")) > 0 {
-		fmt.Println("URL QUERY DATA LEN: ", len(r.URL.Query().Get("id")))
-		fmt.Println(r.URL.Query().Get("id"))
-		postId := r.URL.Query().Get("id")
-		m := structs.MegaData{
-			User:   GetUserInfo(userId),
-			Post:   GetOnePost(postId),
-			Access: GetAccessRight(userId),
-		}
-		return m
-	}
-
+	postId := r.URL.Query().Get("PostId")
 	m := structs.MegaData{
 		User:     GetUserInfo(userId),
-		AllPosts: GetAllPosts(),
+		AllPosts: GetAllPosts(postId),
 		Access:   GetAccessRight(userId),
 	}
 

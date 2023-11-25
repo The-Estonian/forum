@@ -33,12 +33,13 @@
         <a href="/">
             <button class="back-button">Back to forum</button>
         </a>
-        <p>{{.Post.Id}}</p>
-        <p>{{.Post.User}}</p>
-        <p>{{.Post.Title}}</p>
-        <p>{{.Post.Post}}</p>
-        <p>{{.Post.Created}}</p>
-        <form method="post" action="/postcontent?id={{.Post.Id}}">
+        {{$item := index .AllPosts 0}}
+        <p>{{$item.Id}}</p>
+        <p>{{$item.User}}</p>
+        <p>{{$item.Title}}</p>
+        <p>{{$item.Post}}</p>
+        <p>{{$item.Created}}</p>
+        <form method="post" action="/postcontent?PostId={{$item.Id}}">
             </label>
             <label for="createPostComment">
             <span>Create Comment</span>
