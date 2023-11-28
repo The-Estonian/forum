@@ -12,7 +12,7 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Template not found!"+err.Error(), http.StatusInternalServerError)
 	}
 
-	m := dbconnections.GetMegaDataValues(r)
+	m := dbconnections.GetMegaDataValues(r, "Post")
 
 	// var allCat []structs.Category
 	// rows, _ := db.Query("SELECT * FROM category")

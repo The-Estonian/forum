@@ -34,6 +34,7 @@ type AccessRights struct {
 type MegaData struct {
 	User        User
 	Post        Post
+	Categories []Category
 	AllPosts    []Post
 	AllComments []Comment
 	Access      AccessRights

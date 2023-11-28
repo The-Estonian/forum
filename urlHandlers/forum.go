@@ -13,7 +13,7 @@ func HandleForum(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Template not found!"+err.Error(), http.StatusInternalServerError)
 	}
 
-	m := dbconnections.GetMegaDataValues(r)
+	m := dbconnections.GetMegaDataValues(r, "Forum")
 
 	executeErr := template.Execute(w, m)
 	if executeErr != nil {

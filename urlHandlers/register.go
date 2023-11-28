@@ -16,8 +16,11 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Template not found!"+err.Error(), http.StatusInternalServerError)
 	}
+
+	m := dbconnections.GetMegaDataValues(r, "Register")
+
 	if r.Method != http.MethodPost {
-		template.Execute(w, nil)
+		template.Execute(w, m)
 		return
 	}
 
@@ -47,7 +50,8 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 		dataValid = false
 	}
 	if !dataValid {
-		executeErr := template.Execute(w, errorLog)
+		m.Errors = errorLog
+		executeErr := template.Execute(w, m)
 		if executeErr != nil {
 			fmt.Println("Template error: ", executeErr)
 		}
@@ -63,14 +67,16 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 	userNameOk, userEmailOk := dbconnections.RegisterUser(db, username, email, password)
 	if userNameOk {
-		executeErr := template.Execute(w, "Username allready exists!")
+		m.Errors = append(m.Errors, "Username allready exists!")
+		executeErr := template.Execute(w, m)
 		if executeErr != nil {
 			fmt.Println("Template error: ", executeErr)
 		}
 		return
 	}
 	if userEmailOk {
-		executeErr := template.Execute(w, "Email allready exists!")
+		m.Errors = append(m.Errors, "Email allready exists!")
+		executeErr := template.Execute(w, m)
 		if executeErr != nil {
 			fmt.Println("Template error: ", executeErr)
 		}

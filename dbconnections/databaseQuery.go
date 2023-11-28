@@ -38,10 +38,18 @@ func LoginUser(username, password string) bool {
 }
 
 // Deletes Cookie from session database
-func LogoutUser(db *sql.DB, userID string) {
-	fmt.Println(userID)
-	_, err := db.Exec("DELETE FROM session WHERE user=?", userID)
-	validateData.CheckErr(err)
+func LogoutUser(r *http.Request) {
+	db := DbConnection()
+	cookie, err := r.Cookie("UserCookie")
+	if err == nil {
+		hash := CheckHash(cookie.Value)
+		_, err := db.Exec("DELETE FROM session WHERE user=?", hash)
+		if err != nil {
+			fmt.Println("LogoutUser")
+			fmt.Println("Error code:", err)
+		}
+		defer db.Close()
+	}
 }
 
 // Applies Cookie in session database
@@ -111,8 +119,6 @@ func CheckHash(hash string) string {
 	query := db.QueryRow("SELECT user FROM session WHERE hash=?", hash).Scan(&user)
 	defer db.Close()
 	if query != nil {
-		fmt.Println("CheckHash")
-		fmt.Println("Error code: ", query)
 		return "1"
 	}
 	return user
@@ -159,7 +165,7 @@ func GetAllPosts(data string) []structs.Post {
 	var allPosts []structs.Post
 	db := DbConnection()
 	if len(data) > 0 {
-		fmt.Println("Get one post func GetOnePost")
+		// fmt.Println("Get one post func GetOnePost")
 		allPosts = append(allPosts, GetOnePost(data))
 		return allPosts
 	}
@@ -253,7 +259,24 @@ func GetAllComments(db *sql.DB, data string) []structs.Comment {
 
 }
 
-func GetMegaDataValues(r *http.Request) structs.MegaData {
+func GetAllCategories() []structs.Category {
+	db := DbConnection()
+	var allCategories []structs.Category
+	data, _ := db.Query("SELECT * FROM category")
+	defer db.Close()
+	for data.Next() {
+		var category structs.Category
+		if err := data.Scan(&category.Id, &category.Category); err != nil {
+			fmt.Println(err)
+			return allCategories
+		}
+		allCategories = append(allCategories, category)
+	}
+	return allCategories
+
+}
+
+func GetMegaDataValues(r *http.Request, handler string) structs.MegaData {
 	var userId string
 	cookie, err := r.Cookie("UserCookie")
 	if err != nil {
@@ -267,6 +290,9 @@ func GetMegaDataValues(r *http.Request) structs.MegaData {
 		User:     GetUserInfo(userId),
 		AllPosts: GetAllPosts(postId),
 		Access:   GetAccessRight(userId),
+	}
+	if handler == "Post" {
+		m.Categories = GetAllCategories()
 	}
 
 	return m

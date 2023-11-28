@@ -18,7 +18,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Template not found!"+err.Error(), http.StatusInternalServerError)
 	}
 
-	m := dbconnections.GetMegaDataValues(r)
+	m := dbconnections.GetMegaDataValues(r, "Login")
 
 	if r.Method != http.MethodPost {
 		template.Execute(w, m)

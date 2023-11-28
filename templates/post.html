@@ -31,9 +31,9 @@
       </div>
       <div class="container_content">
         <form method="post" action="/post" class="container_register">
-          {{range $item := .AllPosts}}
+          {{range $item := .Categories}}
           <label for="{{$item}}" id="{{$item}}">
-            <p>{{$item}}</p>
+            <p>{{$item.Category}}</p>
             <input type="checkbox" name="{{$item}}" />
           </label>
           {{end}}
