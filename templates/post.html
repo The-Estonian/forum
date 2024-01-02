@@ -9,34 +9,42 @@
   <body>
     <div class="container">
       <div class="container_menu">
-        <a href="/">
+        <a class="container_menu_button" href="/">
           <span>Forum</span>
         </a>
         {{if eq .Access.AccessRight "1" }}
-        <a href="/login">
+        <a class="container_menu_button" href="/login">
           <span>Login</span>
         </a>
-        <a href="/register">
+        <a class="container_menu_button" href="/register">
           <span>Register</span>
         </a>
         {{else if eq .Access.AccessRight "2"}}
-        <a href="/logout">
+        <a class="container_menu_button" href="/logout">
           <span>Logout</span>
         </a>
 
-        <a href="/post">
+        <a class="container_menu_button" href="/post">
           <span>Create Post</span>
         </a>
         {{end}}
+        <span class="container_menu_button"> 
+          {{.User.Username}} 
+        </span>
       </div>
       <div class="container_content">
         <form method="post" action="/post" class="container_register">
-          {{range $item := .Categories}}
-          <label for="{{$item}}" id="{{$item}}">
-            <p>{{$item.Category}}</p>
-            <input type="checkbox" name="{{$item}}" />
-          </label>
-          {{end}}
+          <div class="container_register_categories">
+            {{range $item := .Categories}}
+            <label
+              class="container_register_categories_label"
+              for="{{$item.Id}}"
+            >
+              <p>{{$item.Category}}</p>
+              <input type="checkbox" name="{{$item.Id}}" />
+            </label>
+            {{end}}
+          </div>
           <label for="title">
             <span>Title</span>
             <input type="text" name="title" />

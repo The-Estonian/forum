@@ -18,7 +18,7 @@ func fileExists(filename string) bool {
 func Engine() {
 	if !fileExists("./database/forum.db") {
 		fmt.Println("Did not find the Database! Starting regeneration!")
-		
+
 		dbconnections.CreateDB()
 		fmt.Println("Database Created!")
 
@@ -40,8 +40,11 @@ func Engine() {
 		dbconnections.CreatePostCategoryList()
 		fmt.Println("Post category list Table Created!")
 
-		dbconnections.CreateLikes()
-		fmt.Println("Likes Table Created!")
+		dbconnections.CreatePostLikes()
+		fmt.Println("Post Likes Table Created!")
+
+		dbconnections.CreateCommentLikes()
+		fmt.Println("Comment Likes Table Created!")
 
 		dbconnections.CreatePosts()
 		fmt.Println("Posts Table Created!")

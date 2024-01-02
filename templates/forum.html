@@ -9,34 +9,54 @@
   <body>
     <div class="container">
       <div class="container_menu">
-        <a href="/">
+        <a class="container_menu_button" href="/">
           <span>Forum</span>
         </a>
         {{if eq .Access.AccessRight "1" }}
-        <a href="/login">
+        <a class="container_menu_button" href="/login">
           <span>Login</span>
         </a>
-        <a href="/register">
+        <a class="container_menu_button" href="/register">
           <span>Register</span>
         </a>
         {{else if eq .Access.AccessRight "2"}}
-        <a href="/logout">
+        <a class="container_menu_button" href="/logout">
           <span>Logout</span>
         </a>
-        
-        <a href="/post">
+
+        <a class="container_menu_button" href="/post">
           <span>Create Post</span>
         </a>
         {{end}}
+        <span class="container_menu_button"> {{.User.Username}} </span>
       </div>
       <div class="container_content">
         {{range $item := .AllPosts}}
-        <a href="/postcontent?PostId={{$item.Id}}"><p>{{$item.Title}}</p></a>
+        <a
+          class="container_content_post-link"
+          href="/postcontent?PostId={{$item.Id}}"
+        >
+          <div class="container_content_post-link_container">
+            <span> {{$item.Title}} </span>
+            <span> posted by {{$item.Username}} </span>
+            <span> {{$item.Created}} ago </span>
+            {{if eq $.Access.AccessRight "2" }}
+            <form action="/" method="post">
+              <label for="like">
+                <input type="hidden" name="postId" value="{{$item.Id}}" />
+                <input type="submit" name="like" value="Like" />
+              </label>
+              {{$item.LikeRating}}
+              <label for="dislike">
+                <input type="hidden" name="postId" value="{{$item.Id}}" />
+                <input type="submit" name="dislike" value="Dislike" />
+              </label>
+            </form>
+            {{end}}
+          </div>
+        </a>
         {{end}}
-        <p>CURRENT USER: {{.User.Username}}</p>
       </div>
     </div>
   </body>
 </html>
-
-

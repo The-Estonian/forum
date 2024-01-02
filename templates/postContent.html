@@ -9,25 +9,28 @@
   <body>
     <div class="container">
       <div class="container_menu">
-        <a href="/">
+        <a class="container_menu_button" href="/">
           <span>Forum</span>
         </a>
         {{if eq .Access.AccessRight "1" }}
-        <a href="/login">
+        <a class="container_menu_button" href="/login">
           <span>Login</span>
         </a>
-        <a href="/register">
+        <a class="container_menu_button" href="/register">
           <span>Register</span>
         </a>
         {{else if eq .Access.AccessRight "2"}}
-        <a href="/logout">
+        <a class="container_menu_button" href="/logout">
           <span>Logout</span>
         </a>
         
-        <a href="/post">
+        <a class="container_menu_button" href="/post">
           <span>Create Post</span>
         </a>
         {{end}}
+        <span class="container_menu_button">
+          {{.User.Username}}
+        </span>
       </div>
       <div class="container_content">
         <a href="/">
@@ -39,6 +42,7 @@
         <p>{{$item.Title}}</p>
         <p>{{$item.Post}}</p>
         <p>{{$item.Created}}</p>
+        {{if eq .Access.AccessRight "2" }}
         <form method="post" action="/postcontent?PostId={{$item.Id}}">
             </label>
             <label for="createPostComment">
@@ -47,8 +51,17 @@
             </label>
             <input type="submit" value="Submit" />
         </form>
+        {{end}}
+        {{if .AllComments}}
         {{range $item := .AllComments}}
-        <p>{{$item}}</p>
+        <div class="container_content_post-link_container">
+          <span>{{$item.Comment}}</span>
+          <span>By {{$item.UserId}}</span>
+          <span>Created on: {{$item.Created}}</span>
+        </div>
+        {{end}}
+        {{else}}
+        <p>No comments yet, add one today!</p>
         {{end}}
       </div>
     </div>

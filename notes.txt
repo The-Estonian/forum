@@ -1,0 +1,5 @@
+Browser session cookie set to 10m before it becomes inactive
+SQL session hash set to 10m before deleting it
+
+Password encryption to be added later
+

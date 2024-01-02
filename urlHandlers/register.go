@@ -1,7 +1,6 @@
 package urlHandlers
 
 import (
-	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -62,10 +61,7 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 	email := cleanData.CleanEmail(formDataEmail)
 	password := formDataPassword1
 
-	db, err := sql.Open("sqlite3", "./database/forum.db")
-	validateData.CheckErr(err)
-	defer db.Close()
-	userNameOk, userEmailOk := dbconnections.RegisterUser(db, username, email, password)
+	userNameOk, userEmailOk := dbconnections.RegisterUser(username, email, password)
 	if userNameOk {
 		m.Errors = append(m.Errors, "Username allready exists!")
 		executeErr := template.Execute(w, m)

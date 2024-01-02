@@ -9,25 +9,28 @@
   <body>
     <div class="container">
       <div class="container_menu">
-        <a href="/">
+        <a class="container_menu_button" href="/">
           <span>Forum</span>
         </a>
         {{if eq .Access.AccessRight "1" }}
-        <a href="/login">
+        <a class="container_menu_button" href="/login">
           <span>Login</span>
         </a>
-        <a href="/register">
+        <a class="container_menu_button" href="/register">
           <span>Register</span>
         </a>
         {{else if eq .Access.AccessRight "2"}}
-        <a href="/logout">
+        <a class="container_menu_button" href="/logout">
           <span>Logout</span>
         </a>
-
-        <a href="/post">
+        
+        <a class="container_menu_button" href="/post">
           <span>Create Post</span>
         </a>
         {{end}}
+        <span class="container_menu_button">
+          {{.User.Username}}
+        </span>
       </div>
       <form method="post" action="/login" class="container_login">
         <label for="username">

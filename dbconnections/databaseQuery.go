@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"net/url"
+	"time"
 
 	"forum/structs"
 	"forum/validateData"
@@ -18,9 +18,10 @@ func DbConnection() *sql.DB {
 }
 
 // Register new user, add user values to users database. Returns true if user/email is database.
-func RegisterUser(db *sql.DB, username, email, password string) (bool, bool) {
-	usernameCheck := CheckValueFromDB(db, "username", username)
-	emailCheck := CheckValueFromDB(db, "email", email)
+func RegisterUser(username, email, password string) (bool, bool) {
+	db := DbConnection()
+	usernameCheck := CheckValueFromDB("username", username)
+	emailCheck := CheckValueFromDB("email", email)
 	if !usernameCheck && !emailCheck {
 		_, err := db.Exec("INSERT INTO users(username, password, email) VALUES(?, ?, ?)", username, password, email)
 		validateData.CheckErr(err)
@@ -28,6 +29,7 @@ func RegisterUser(db *sql.DB, username, email, password string) (bool, bool) {
 		SetAccessRight(GetID(username), "2")
 		fmt.Println("Access granted to user", GetID(username))
 	}
+	defer db.Close()
 	return usernameCheck, emailCheck
 }
 
@@ -38,27 +40,22 @@ func LoginUser(username, password string) bool {
 }
 
 // Deletes Cookie from session database
-func LogoutUser(r *http.Request) {
+func LogoutUser(hash string) {
 	db := DbConnection()
-	cookie, err := r.Cookie("UserCookie")
-	if err == nil {
-		hash := CheckHash(cookie.Value)
-		_, err := db.Exec("DELETE FROM session WHERE user=?", hash)
-		if err != nil {
-			fmt.Println("LogoutUser")
-			fmt.Println("Error code:", err)
-		}
-		defer db.Close()
+	_, err := db.Exec("DELETE FROM session WHERE hash=?", hash)
+	if err != nil {
+		fmt.Println("LogoutUser")
+		fmt.Println("Error code:", err)
 	}
+	defer db.Close()
 }
 
 // Applies Cookie in session database
 func ApplyHash(user, hash string) {
 	db := DbConnection()
-	datastream, err := db.Prepare("INSERT OR REPLACE INTO session(user, hash) VALUES(?, ?)")
+	_, err := db.Exec("INSERT OR REPLACE INTO session(user, hash) VALUES(?, ?)", user, hash)
 	defer db.Close()
 	validateData.CheckErr(err)
-	datastream.Exec(user, hash)
 }
 
 // Returns ID if username exists in the users database
@@ -116,8 +113,19 @@ func SetAccessRight(user string, access string) {
 func CheckHash(hash string) string {
 	db := DbConnection()
 	var user string
-	query := db.QueryRow("SELECT user FROM session WHERE hash=?", hash).Scan(&user)
+	var date string
+	query := db.QueryRow("SELECT user, date FROM session WHERE hash=?", hash).Scan(&user, &date)
 	defer db.Close()
+	if query == nil {
+		layout := "2006-01-02 15:04:05"
+		hashDate, _ := time.Parse(layout, date)
+		currTime := time.Now().Add(time.Minute * -10)
+		if currTime.Sub(hashDate) > 0 {
+			fmt.Println("Hash expired, Executing delete")
+			LogoutUser(hash)
+			return "1"
+		}
+	}
 	if query != nil {
 		return "1"
 	}
@@ -125,9 +133,11 @@ func CheckHash(hash string) string {
 }
 
 // Returns True if hash in database
-func HashInDatabase(db *sql.DB, hash string) bool {
+func HashInDatabase(hash string) bool {
+	db := DbConnection()
 	var user string
 	query := db.QueryRow("SELECT user FROM session WHERE hash=?", hash).Scan(&user)
+	defer db.Close()
 	if query != nil {
 		fmt.Println("HashInDatabase: didn't find user with that hash!")
 		fmt.Println("Error code: ", query)
@@ -137,8 +147,10 @@ func HashInDatabase(db *sql.DB, hash string) bool {
 }
 
 // Return True if value is in users database column
-func CheckValueFromDB(db *sql.DB, column string, valueToCheck string) bool {
+func CheckValueFromDB(column string, valueToCheck string) bool {
+	db := DbConnection()
 	newUsername := db.QueryRow("SELECT "+column+" FROM users WHERE "+column+"=?", valueToCheck).Scan(&valueToCheck)
+	defer db.Close()
 	trigger := false
 	if newUsername == nil {
 		fmt.Println("Username already exists!")
@@ -150,35 +162,39 @@ func CheckValueFromDB(db *sql.DB, column string, valueToCheck string) bool {
 // Returns password from users based on username. Hopefully encrypted.
 func CheckPassword(username string) string {
 	db := DbConnection()
-	var returnString string
-	err := db.QueryRow("SELECT password FROM users WHERE username=?", username).Scan(&returnString)
+	var returnPassword string
+	err := db.QueryRow("SELECT password FROM users WHERE username=?", username).Scan(&returnPassword)
 	defer db.Close()
 	if err != nil {
 		fmt.Println("User does not exist")
 		return ""
 	}
-	return returnString
+	return returnPassword
 }
 
 // Returns all rows in an array of structs from posts database
 func GetAllPosts(data string) []structs.Post {
 	var allPosts []structs.Post
-	db := DbConnection()
 	if len(data) > 0 {
-		// fmt.Println("Get one post func GetOnePost")
 		allPosts = append(allPosts, GetOnePost(data))
 		return allPosts
 	}
-	posts, _ := db.Query("SELECT * FROM posts")
+	db := DbConnection()
+	rows, _ := db.Query("SELECT posts.id, title, posts.user, posts.post, created, username, SUM(post_like) FROM posts INNER JOIN users ON posts.user = users.id INNER JOIN post_likes ON posts.id = post_likes.post GROUP BY posts.id, title, posts.user, posts.post, created, username")
 	defer db.Close()
-	for posts.Next() {
+	for rows.Next() {
 		var post structs.Post
-		if err := posts.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created); err != nil {
-			fmt.Println(err)
+		if err := rows.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created, &post.Username, &post.LikeRating); err != nil {
+			fmt.Println("Closing connection")
+			rows.Close()
 			return allPosts
 		}
+		layout := "2006-01-02 15:04:05"
+		postDate, _ := time.Parse(layout, post.Created)
+		post.Created = time.Since(postDate).Truncate(time.Second).String()
 		allPosts = append(allPosts, post)
 	}
+	defer rows.Close()
 	return allPosts
 }
 
@@ -195,8 +211,10 @@ func GetOnePost(data string) structs.Post {
 }
 
 // Inserts into posts and post_category_list user inserted data
-func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
-
+func InsertMessage(r *http.Request, userId string) {
+	r.ParseForm()
+	userForm := r.Form
+	db := DbConnection()
 	var inputTitle string
 	var inputMessage string
 	var catArray []string
@@ -217,12 +235,18 @@ func InsertMessage(db *sql.DB, userForm url.Values, userId string) {
 		fmt.Println(err)
 	}
 
+	_, err = db.Exec("INSERT INTO post_likes (post, user, post_like) VALUES (?, ?, ?)", data, "1", "0")
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	for _, v := range catArray {
 		_, err = db.Exec("INSERT INTO post_category_list (post_category, post_id) VALUES (?, ?)", v, data)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
+	defer db.Close()
 }
 
 // Inserts into comments database user inserted comment and commentator userID
@@ -235,18 +259,12 @@ func InsertComment(postId string, commentatorId string, comment string) {
 	}
 }
 
-func PostComment(r *http.Request, m structs.MegaData) {
-	postId := r.URL.Query().Get("id")
-	commentatorId := m.User.Id
-	comment := r.FormValue("createPostComment")
-	InsertComment(postId, commentatorId, comment)
-}
-
 // Returns all comments by post_id
-func GetAllComments(db *sql.DB, data string) []structs.Comment {
+func GetAllComments(data string) []structs.Comment {
+	db := DbConnection()
 	var allComments []structs.Comment
-
 	allCommentsFromData, _ := db.Query("SELECT * FROM comments WHERE post_id=?", data)
+	defer db.Close()
 	for allCommentsFromData.Next() {
 		var comments structs.Comment
 		if err := allCommentsFromData.Scan(&comments.Id, &comments.PostId, &comments.UserId, &comments.Comment, &comments.Created); err != nil {
@@ -254,7 +272,7 @@ func GetAllComments(db *sql.DB, data string) []structs.Comment {
 		}
 		allComments = append(allComments, comments)
 	}
-
+	defer allCommentsFromData.Close()
 	return allComments
 
 }
@@ -272,7 +290,51 @@ func GetAllCategories() []structs.Category {
 		}
 		allCategories = append(allCategories, category)
 	}
+	defer data.Close()
 	return allCategories
+}
+
+// func GetPostLikes() {
+// 	db := DbConnection()
+// 	data, err := db.Query("SELECT user, COUNT(DISTINCT post_like) FROM post_likes")
+// 	if err != nil {
+// 		fmt.Println("ERROR", err)
+// 	}
+// 	for data.Next() {
+// 		var stream string
+// 		var stream2 string
+// 		var stream3 string
+// 		data.Scan(&stream, &stream2)
+// 		fmt.Println("STREAM", stream)
+// 		fmt.Println("STREAM2", stream2)
+// 		fmt.Println("STREAM3", stream3)
+// 	}
+// 	defer db.Close()
+// }
+
+func SetPostLikes(userId, postId, like string) {
+	db := DbConnection()
+	var postLike structs.PostLikes
+	db.QueryRow("SELECT * FROM post_likes WHERE post=? AND user=?", postId, userId).Scan(&postLike.Id, &postLike.Post, &postLike.User, &postLike.PostLike)
+	if postLike.Id == "" {
+		_, err := db.Exec("INSERT INTO post_likes (post, user, post_like) VALUES (?, ?, ?)", postId, userId, like)
+		if err != nil {
+			fmt.Println("New: Error inserting like to table")
+		}
+	} else {
+		_, err := db.Exec("REPLACE INTO post_likes (post, user, post_like) VALUES (?, ?, ?)", postId, userId, like)
+		if err != nil {
+			fmt.Println("Exists: Error inserting like to table")
+		}
+	}
+	defer db.Close()
+}
+
+func GetCommentLikes() {
+
+}
+
+func SetCommentLikes() {
 
 }
 
@@ -287,13 +349,18 @@ func GetMegaDataValues(r *http.Request, handler string) structs.MegaData {
 
 	postId := r.URL.Query().Get("PostId")
 	m := structs.MegaData{
-		User:     GetUserInfo(userId),
-		AllPosts: GetAllPosts(postId),
-		Access:   GetAccessRight(userId),
+		User:   GetUserInfo(userId),
+		Access: GetAccessRight(userId),
+	}
+	if handler == "Forum" {
+		m.AllPosts = GetAllPosts(postId)
 	}
 	if handler == "Post" {
 		m.Categories = GetAllCategories()
 	}
-
+	if handler == "PostContent" {
+		m.AllPosts = GetAllPosts(postId)
+		m.AllComments = GetAllComments(postId)
+	}
 	return m
 }

@@ -48,7 +48,7 @@ func CreateUserAccess() {
 func CreateSessions() {
 	database, err := sql.Open("sqlite3", "./database/forum.db")
 	validateData.CheckErr(err)
-	database.Exec("CREATE TABLE `session` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user` INTEGER UNIQUE REFERENCES users(id), `hash` VARCHAR(255) NOT NULL)")
+	database.Exec("CREATE TABLE `session` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user` INTEGER UNIQUE REFERENCES users(id), `hash` VARCHAR(255) NOT NULL, `date` NOT NULL DEFAULT CURRENT_TIMESTAMP)")
 	database.Close()
 }
 
@@ -73,10 +73,17 @@ func CreatePostCategoryList() {
 	db.Exec("CREATE TABLE `post_category_list` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `post_category` INTEGER NOT NULL REFERENCES category(id), `post_id` INTEGER NOT NULL REFERENCES posts(id))")
 }
 
-func CreateLikes() {
+func CreatePostLikes() {
 	database, err := sql.Open("sqlite3", "./database/forum.db")
 	validateData.CheckErr(err)
-	database.Exec("CREATE TABLE `likes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `post` INTEGER NOT NULL REFERENCES posts(id), `user` INTEGER NOT NULL REFERENCES users(id))")
+	database.Exec("CREATE TABLE `post_likes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `post` INTEGER NOT NULL REFERENCES posts(id), `user` INTEGER NOT NULL REFERENCES users(id), `post_like` INTEGER, UNIQUE(post, user) ON CONFLICT REPLACE)")
+	database.Close()
+}
+
+func CreateCommentLikes() {
+	database, err := sql.Open("sqlite3", "./database/forum.db")
+	validateData.CheckErr(err)
+	database.Exec("CREATE TABLE `comment_likes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `comment` INTEGER NOT NULL REFERENCES comments(id), `user` INTEGER NOT NULL UNIQUE REFERENCES users(id), `comment_like` INTEGER)")
 	database.Close()
 }
 
