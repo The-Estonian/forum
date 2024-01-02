@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"forum/structs"
@@ -201,23 +202,31 @@ func GetAllPosts(data string) []structs.Post {
 // Returns a struct that contains data from one row in post database
 func GetOnePost(data string) structs.Post {
 	db := DbConnection()
-	posts := db.QueryRow("SELECT * FROM posts WHERE id=?", data)
-	defer db.Close()
+	posts := db.QueryRow("SELECT posts.id, posts.title, users.username, posts.post, posts.created FROM posts INNER JOIN users ON posts.user = users.id WHERE posts.id=?", data)
 	var post structs.Post
 	if err := posts.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created); err != nil {
 		fmt.Println(err)
 	}
+	categoryList, _ := db.Query("SELECT category.id, category.category FROM post_category_list INNER JOIN category ON category.id = post_category_list.post_category WHERE post_id=?", data)
+	defer db.Close()
+
+	for categoryList.Next() {
+		var cats structs.Category
+		categoryList.Scan(&cats.Id, &cats.Category)
+		if cats.Category != "Default" {
+			post.Categories = append(post.Categories, cats)
+		}
+	}
+	categoryList.Close()
 	return post
 }
 
 // Inserts into posts and post_category_list user inserted data
-func InsertMessage(r *http.Request, userId string) {
-	r.ParseForm()
-	userForm := r.Form
+func InsertMessage(userForm url.Values, userId string) {
 	db := DbConnection()
 	var inputTitle string
 	var inputMessage string
-	var catArray []string
+	catArray := []string{"1"}
 
 	for key, value := range userForm {
 		if key == "title" {
@@ -263,7 +272,7 @@ func InsertComment(postId string, commentatorId string, comment string) {
 func GetAllComments(data string) []structs.Comment {
 	db := DbConnection()
 	var allComments []structs.Comment
-	allCommentsFromData, _ := db.Query("SELECT * FROM comments WHERE post_id=?", data)
+	allCommentsFromData, _ := db.Query("SELECT comments.id, comments.post_id, users.username, comments.comment, comments.created FROM comments INNER JOIN users ON users.id = comments.user WHERE post_id=?", data)
 	defer db.Close()
 	for allCommentsFromData.Next() {
 		var comments structs.Comment
@@ -274,7 +283,6 @@ func GetAllComments(data string) []structs.Comment {
 	}
 	defer allCommentsFromData.Close()
 	return allComments
-
 }
 
 func GetAllCategories() []structs.Category {
@@ -291,26 +299,8 @@ func GetAllCategories() []structs.Category {
 		allCategories = append(allCategories, category)
 	}
 	defer data.Close()
-	return allCategories
+	return allCategories[1:]
 }
-
-// func GetPostLikes() {
-// 	db := DbConnection()
-// 	data, err := db.Query("SELECT user, COUNT(DISTINCT post_like) FROM post_likes")
-// 	if err != nil {
-// 		fmt.Println("ERROR", err)
-// 	}
-// 	for data.Next() {
-// 		var stream string
-// 		var stream2 string
-// 		var stream3 string
-// 		data.Scan(&stream, &stream2)
-// 		fmt.Println("STREAM", stream)
-// 		fmt.Println("STREAM2", stream2)
-// 		fmt.Println("STREAM3", stream3)
-// 	}
-// 	defer db.Close()
-// }
 
 func SetPostLikes(userId, postId, like string) {
 	db := DbConnection()

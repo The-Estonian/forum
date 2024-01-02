@@ -33,11 +33,15 @@
         </span>
       </div>
       <div class="container_content">
+        {{range $cat := .AllPosts}}
+          {{range $singleCat := $cat.Categories}}
+            <p>{{$singleCat.Category}}</p>
+          {{end}}
+        {{end}}
         <a href="/">
             <button class="back-button">Back to forum</button>
         </a>
         {{$item := index .AllPosts 0}}
-        <p>{{$item.Id}}</p>
         <p>{{$item.User}}</p>
         <p>{{$item.Title}}</p>
         <p>{{$item.Post}}</p>
@@ -52,14 +56,32 @@
             <input type="submit" value="Submit" />
         </form>
         {{end}}
+        {{if .Errors}} 
+        {{range $err := .Errors}}
+          <p>{{$err}}</p>
+        {{end}} 
+        {{end}}
         {{if .AllComments}}
         {{range $item := .AllComments}}
         <div class="container_content_post-link_container">
           <span>{{$item.Comment}}</span>
           <span>By {{$item.UserId}}</span>
           <span>Created on: {{$item.Created}}</span>
+          {{if eq $.Access.AccessRight "2" }}
+            <form action="/postcontent?PostId={{$item.Id}}" method="post">
+              <label for="like">
+                <input type="hidden" name="postId" value="{{$item.Id}}" />
+                <input type="submit" name="like" value="Like" />
+              </label>
+              <label for="dislike">
+                <input type="hidden" name="postId" value="{{$item.Id}}" />
+                <input type="submit" name="dislike" value="Dislike" />
+              </label>
+            </form>
+            {{end}}
         </div>
         {{end}}
+        
         {{else}}
         <p>No comments yet, add one today!</p>
         {{end}}

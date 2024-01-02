@@ -17,7 +17,21 @@ func HandlePost(w http.ResponseWriter, r *http.Request) {
 		template.Execute(w, m)
 		return
 	}
-	
-	dbconnections.InsertMessage(r, m.User.Id)
+
+	r.ParseForm()
+	userForm := r.Form
+
+	if len(userForm["title"][0]) < 1 || len(userForm["message"][0]) < 1 {
+		if len(userForm["title"][0]) < 1 {
+			m.Errors = append(m.Errors, "Title can not be empty!")
+		}
+		if len(userForm["message"][0]) < 1 {
+			m.Errors = append(m.Errors, "Message can not be empty!")
+		}
+		template.Execute(w, m)
+		return
+	}
+
+	dbconnections.InsertMessage(userForm, m.User.Id)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

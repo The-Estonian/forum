@@ -8,6 +8,7 @@ type Post struct {
 	Created    string
 	Username   string
 	LikeRating string
+	Categories []Category
 }
 
 type Category struct {

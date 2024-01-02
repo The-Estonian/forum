@@ -20,11 +20,25 @@ func HandlePostContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postId := r.URL.Query().Get("PostId")
-	commentatorId := m.User.Id
-	comment := r.FormValue("createPostComment")
+	// postId := r.URL.Query().Get("PostId")
+	// commentatorId := m.User.Id
 
-	dbconnections.InsertComment(postId, commentatorId, comment)
+	r.ParseForm()
+	fmt.Println(r.Form)
+	// if r.Form["like"] != nil {
+	// 	dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "1")
+	// }
+	// if r.Form["dislike"] != nil {
+	// 	dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "-1")
+	// }
+
+	// comment := r.FormValue("createPostComment")
+	// if len(comment) < 1 {
+	// 	m.Errors = append(m.Errors, "Comment can not be empty")
+	// 	template.Execute(w, m)
+	// 	return
+	// }
+	// dbconnections.InsertComment(postId, commentatorId, comment)
 
 	m = dbconnections.GetMegaDataValues(r, "PostContent")
 	executeErr := template.Execute(w, m)

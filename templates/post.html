@@ -54,6 +54,11 @@
             <input type="text" name="message" />
           </label>
           <input type="submit" value="Submit" />
+          {{if .Errors}} 
+          {{range $err := .Errors}}
+            <p>{{$err}}</p>
+          {{end}} 
+          {{end}}
         </form>
       </div>
     </div>
