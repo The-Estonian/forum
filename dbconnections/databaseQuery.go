@@ -174,14 +174,14 @@ func CheckPassword(username string) string {
 }
 
 // Returns all rows in an array of structs from posts database
-func GetAllPosts(data string) []structs.Post {
+func GetAllPosts(postId, userId string) []structs.Post {
 	var allPosts []structs.Post
-	if len(data) > 0 {
-		allPosts = append(allPosts, GetOnePost(data))
+	if len(postId) > 0 {
+		allPosts = append(allPosts, GetOnePost(postId))
 		return allPosts
 	}
 	db := DbConnection()
-	rows, _ := db.Query("SELECT posts.id, title, posts.user, posts.post, created, username, SUM(post_like) FROM posts INNER JOIN users ON posts.user = users.id INNER JOIN post_likes ON posts.id = post_likes.post GROUP BY posts.id, title, posts.user, posts.post, created, username")
+	rows, _ := db.Query("SELECT posts.id, title, posts.user, posts.post, created, username, SUM(post_likes.post_like) FROM posts INNER JOIN users ON posts.user = users.id INNER JOIN post_likes ON posts.id = post_likes.post GROUP BY posts.id, title, posts.user, posts.post, created, username")
 	defer db.Close()
 	for rows.Next() {
 		var post structs.Post
@@ -196,6 +196,14 @@ func GetAllPosts(data string) []structs.Post {
 		allPosts = append(allPosts, post)
 	}
 	defer rows.Close()
+	allPostLikes := GetAllPostLikes(userId)
+	for i := 0; i < len(allPosts); i++ {
+		for j := 0; j < len(allPostLikes); j++ {
+			if allPosts[i].Id == allPostLikes[j].Post {
+				allPosts[i].CurrUserRate = allPostLikes[j].PostLike
+			}
+		}
+	}
 	return allPosts
 }
 
@@ -261,27 +269,44 @@ func InsertMessage(userForm url.Values, userId string) {
 // Inserts into comments database user inserted comment and commentator userID
 func InsertComment(postId string, commentatorId string, comment string) {
 	db := DbConnection()
-	_, err := db.Exec("INSERT INTO comments (post_id, user, comment) VALUES (?, ?, ?)", postId, commentatorId, comment)
-	defer db.Close()
+
+	var commentId string
+	err := db.QueryRow("INSERT INTO comments (post_id, user, comment) VALUES (?, ?, ?) RETURNING id", postId, commentatorId, comment).Scan(&commentId)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	_, err = db.Exec("INSERT INTO comment_likes (comment, user, comment_like) VALUES (?, ?, ?)", commentId, "1", "0")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer db.Close()
+
 }
 
 // Returns all comments by post_id
-func GetAllComments(data string) []structs.Comment {
+func GetAllComments(postId, userId string) []structs.Comment {
 	db := DbConnection()
 	var allComments []structs.Comment
-	allCommentsFromData, _ := db.Query("SELECT comments.id, comments.post_id, users.username, comments.comment, comments.created FROM comments INNER JOIN users ON users.id = comments.user WHERE post_id=?", data)
+	allCommentsFromData, _ := db.Query("SELECT comments.id, comments.post_id, users.username, comments.comment, comments.created, SUM(comment_likes.comment_like) FROM comments INNER JOIN users ON users.id = comments.user INNER JOIN comment_likes ON comment_likes.comment = comments.id WHERE post_id=? GROUP BY comments.id", postId)
 	defer db.Close()
 	for allCommentsFromData.Next() {
 		var comments structs.Comment
-		if err := allCommentsFromData.Scan(&comments.Id, &comments.PostId, &comments.UserId, &comments.Comment, &comments.Created); err != nil {
+		if err := allCommentsFromData.Scan(&comments.Id, &comments.PostId, &comments.UserId, &comments.Comment, &comments.Created, &comments.Likes); err != nil {
 			fmt.Println(err)
 		}
 		allComments = append(allComments, comments)
 	}
 	defer allCommentsFromData.Close()
+	allCommentLikes := GetAllCommentLikes(userId)
+	for i := 0; i < len(allComments); i++ {
+		for j := 0; j < len(allCommentLikes); j++ {
+			if allComments[i].Id == allCommentLikes[j].CommentId {
+				allComments[i].CurrUserRate = allCommentLikes[j].CommentLike
+			}
+		}
+	}
 	return allComments
 }
 
@@ -305,7 +330,7 @@ func GetAllCategories() []structs.Category {
 func SetPostLikes(userId, postId, like string) {
 	db := DbConnection()
 	var postLike structs.PostLikes
-	db.QueryRow("SELECT * FROM post_likes WHERE post=? AND user=?", postId, userId).Scan(&postLike.Id, &postLike.Post, &postLike.User, &postLike.PostLike)
+	db.QueryRow("SELECT * FROM post_likes WHERE post=? AND user=?", postId, userId).Scan(&postLike.Id, &postLike.Post, &postLike.UserId, &postLike.PostLike)
 	if postLike.Id == "" {
 		_, err := db.Exec("INSERT INTO post_likes (post, user, post_like) VALUES (?, ?, ?)", postId, userId, like)
 		if err != nil {
@@ -320,12 +345,72 @@ func SetPostLikes(userId, postId, like string) {
 	defer db.Close()
 }
 
-func GetCommentLikes() {
-
+func SetCommentLikes(userId, commentId, like string) {
+	db := DbConnection()
+	var commentLike structs.CommentLikes
+	db.QueryRow("SELECT * FROM comment_likes WHERE comment=? AND user=?", commentId, userId).Scan(&commentLike.Id, &commentLike.CommentId, &commentLike.UserId, &commentLike.CommentLike)
+	if commentLike.Id == "" {
+		_, err := db.Exec("INSERT INTO comment_likes (comment, user, comment_like) VALUES (?, ?, ?)", commentId, userId, like)
+		if err != nil {
+			fmt.Println("New: Error inserting comment like to table")
+		}
+	} else {
+		_, err := db.Exec("REPLACE INTO comment_likes (comment, user, comment_like) VALUES (?, ?, ?)", commentId, userId, like)
+		if err != nil {
+			fmt.Println("Exists: Error inserting comment like to table")
+		}
+	}
+	defer db.Close()
 }
 
-func SetCommentLikes() {
+func GetAllPostLikes(userId string) []structs.PostLikes {
+	db := DbConnection()
+	rows, _ := db.Query("SELECT * FROM post_likes where user=?", userId)
+	defer db.Close()
+	var allUserPostLikes []structs.PostLikes
+	for rows.Next() {
+		var postLike structs.PostLikes
+		if err := rows.Scan(&postLike.Id, &postLike.Post, &postLike.UserId, &postLike.PostLike); err != nil {
+			fmt.Println(err)
+			return allUserPostLikes
+		}
+		allUserPostLikes = append(allUserPostLikes, postLike)
+	}
+	defer rows.Close()
+	return allUserPostLikes
+}
 
+func GetPostLike(userId, postId string) string {
+	db := DbConnection()
+	var rating string
+	db.QueryRow("SELECT post_like FROM post_likes where user=? and post=? ", userId, postId).Scan(&rating)
+	defer db.Close()
+	return rating
+}
+
+func GetAllCommentLikes(userId string) []structs.CommentLikes {
+	db := DbConnection()
+	rows, _ := db.Query("SELECT * FROM comment_likes where user=?", userId)
+	defer db.Close()
+	var allUserCommentLikes []structs.CommentLikes
+	for rows.Next() {
+		var commentLike structs.CommentLikes
+		if err := rows.Scan(&commentLike.Id, &commentLike.CommentId, &commentLike.UserId, &commentLike.CommentLike); err != nil {
+			fmt.Println(err)
+			return allUserCommentLikes
+		}
+		allUserCommentLikes = append(allUserCommentLikes, commentLike)
+	}
+	defer rows.Close()
+	return allUserCommentLikes
+}
+
+func GetCommentLike(userId, commentId string) string {
+	db := DbConnection()
+	var rating string
+	db.QueryRow("SELECT comment_like FROM comment_likes where user=? and comment=? ", userId, commentId).Scan(&rating)
+	defer db.Close()
+	return rating
 }
 
 func GetMegaDataValues(r *http.Request, handler string) structs.MegaData {
@@ -343,14 +428,14 @@ func GetMegaDataValues(r *http.Request, handler string) structs.MegaData {
 		Access: GetAccessRight(userId),
 	}
 	if handler == "Forum" {
-		m.AllPosts = GetAllPosts(postId)
+		m.AllPosts = GetAllPosts(postId, userId)
 	}
 	if handler == "Post" {
 		m.Categories = GetAllCategories()
 	}
 	if handler == "PostContent" {
-		m.AllPosts = GetAllPosts(postId)
-		m.AllComments = GetAllComments(postId)
+		m.AllPosts = GetAllPosts(postId, userId)
+		m.AllComments = GetAllComments(postId, userId)
 	}
 	return m
 }

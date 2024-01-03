@@ -20,25 +20,33 @@ func HandlePostContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// postId := r.URL.Query().Get("PostId")
-	// commentatorId := m.User.Id
-
 	r.ParseForm()
-	fmt.Println(r.Form)
-	// if r.Form["like"] != nil {
-	// 	dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "1")
-	// }
-	// if r.Form["dislike"] != nil {
-	// 	dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "-1")
-	// }
-
-	// comment := r.FormValue("createPostComment")
-	// if len(comment) < 1 {
-	// 	m.Errors = append(m.Errors, "Comment can not be empty")
-	// 	template.Execute(w, m)
-	// 	return
-	// }
-	// dbconnections.InsertComment(postId, commentatorId, comment)
+	for key := range r.Form {
+		if key == "createPostComment" {
+			if len(r.Form[key][0]) < 1 {
+				m.Errors = append(m.Errors, "Comment can not be empty")
+				template.Execute(w, m)
+				return
+			} else {
+				dbconnections.InsertComment(r.Form["PostId"][0], m.User.Id, r.Form["createPostComment"][0])
+			}
+		}
+		userCurrLike := dbconnections.GetCommentLike(m.User.Id, r.Form["CommentId"][0])
+		if key == "like" {
+			if userCurrLike == "1" {
+				dbconnections.SetCommentLikes(m.User.Id, r.Form["CommentId"][0], "0")
+			} else {
+				dbconnections.SetCommentLikes(m.User.Id, r.Form["CommentId"][0], "1")
+			}
+		}
+		if key == "dislike" {
+			if userCurrLike == "-1" {
+				dbconnections.SetCommentLikes(m.User.Id, r.Form["CommentId"][0], "0")
+			} else {
+				dbconnections.SetCommentLikes(m.User.Id, r.Form["CommentId"][0], "-1")
+			}
+		}
+	}
 
 	m = dbconnections.GetMegaDataValues(r, "PostContent")
 	executeErr := template.Execute(w, m)

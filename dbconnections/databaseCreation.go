@@ -83,7 +83,7 @@ func CreatePostLikes() {
 func CreateCommentLikes() {
 	database, err := sql.Open("sqlite3", "./database/forum.db")
 	validateData.CheckErr(err)
-	database.Exec("CREATE TABLE `comment_likes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `comment` INTEGER NOT NULL REFERENCES comments(id), `user` INTEGER NOT NULL UNIQUE REFERENCES users(id), `comment_like` INTEGER)")
+	database.Exec("CREATE TABLE `comment_likes` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `comment` INTEGER NOT NULL REFERENCES comments(id), `user` INTEGER NOT NULL REFERENCES users(id), `comment_like` INTEGER, UNIQUE(comment, user) ON CONFLICT REPLACE)")
 	database.Close()
 }
 

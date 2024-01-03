@@ -67,15 +67,28 @@
           <span>{{$item.Comment}}</span>
           <span>By {{$item.UserId}}</span>
           <span>Created on: {{$item.Created}}</span>
+          
+          {{$postItem := index $.AllPosts 0}}
           {{if eq $.Access.AccessRight "2" }}
-            <form action="/postcontent?PostId={{$item.Id}}" method="post">
+            <form action="/postcontent?PostId={{$postItem.Id}}" method="post">
               <label for="like">
-                <input type="hidden" name="postId" value="{{$item.Id}}" />
-                <input type="submit" name="like" value="Like" />
+                <input type="hidden" name="CommentId" value="{{$item.Id}}" />
+                {{if eq $item.CurrUserRate "1"}}
+                <input style="border: 2px solid red;" type="submit" name="like" value="Like" />
+                {{else}}
+                <input style="border: 2px solid transparent;" type="submit" name="like" value="Like" />
+                {{end}}
               </label>
+              {{end}}
+              <span>Rating: {{$item.Likes}}</span>
+              {{if eq $.Access.AccessRight "2" }}
               <label for="dislike">
-                <input type="hidden" name="postId" value="{{$item.Id}}" />
-                <input type="submit" name="dislike" value="Dislike" />
+                <input type="hidden" name="CommentId" value="{{$item.Id}}" />
+                {{if eq $item.CurrUserRate "-1"}}
+                <input style="border: 2px solid red;"  type="submit" name="dislike" value="Dislike" />
+                {{else}}
+                <input style="border: 2px solid transparent;" type="submit" name="dislike" value="Dislike" />
+                {{end}}
               </label>
             </form>
             {{end}}

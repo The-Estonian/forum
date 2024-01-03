@@ -32,27 +32,40 @@
       </div>
       <div class="container_content">
         {{range $item := .AllPosts}}
+        
         <a
           class="container_content_post-link"
           href="/postcontent?PostId={{$item.Id}}"
         >
-          <div class="container_content_post-link_container">
+          {{if eq $item.User $.User.Id}}
+            <div class="container_content_post-link_container" style="background-color: black; color: azure;">
+          {{else}}
+            <div class="container_content_post-link_container">
+          {{end}}
             <span> {{$item.Title}} </span>
             <span> posted by {{$item.Username}} </span>
             <span> {{$item.Created}} ago </span>
-            {{if eq $.Access.AccessRight "2" }}
-            <form action="/" method="post">
-              <label for="like">
-                <input type="hidden" name="postId" value="{{$item.Id}}" />
-                <input type="submit" name="like" value="Like" />
-              </label>
-              {{$item.LikeRating}}
-              <label for="dislike">
-                <input type="hidden" name="postId" value="{{$item.Id}}" />
-                <input type="submit" name="dislike" value="Dislike" />
-              </label>
-            </form>
-            {{end}}
+          {{if eq $.Access.AccessRight "2" }}
+          <form action="/" method="post">
+            <label for="like">
+              <input type="hidden" name="postId" value="{{$item.Id}}" />
+              {{if eq $item.CurrUserRate "1"}}
+              <input style="border: 2px solid red;" type="submit" name="like" value="Like" />
+              {{else}}
+              <input style="border: 2px solid transparent;" type="submit" name="like" value="Like" />
+              {{end}}
+            </label>
+            <span>Rating: {{$item.LikeRating}}</span>
+            <label for="dislike">
+              <input type="hidden" name="postId" value="{{$item.Id}}" />
+              {{if eq $item.CurrUserRate "-1"}}
+              <input style="border: 2px solid red;" type="submit" name="dislike" value="Dislike" />
+              {{else}}
+              <input style="border: 2px solid transparent;" type="submit" name="dislike" value="Dislike" />
+               {{end}}
+            </label>
+          </form>
+          {{end}}
           </div>
         </a>
         {{end}}

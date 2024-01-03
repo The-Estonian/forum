@@ -18,11 +18,20 @@ func HandleForum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	r.ParseForm()
+	userCurrLike := dbconnections.GetPostLike(m.User.Id, r.Form["postId"][0])
 	if r.Form["like"] != nil {
-		dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "1")
+		if userCurrLike == "1" {
+			dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "0")
+		} else {
+			dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "1")
+		}
 	}
 	if r.Form["dislike"] != nil {
-		dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "-1")
+		if userCurrLike == "-1" {
+			dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "0")
+		} else {
+			dbconnections.SetPostLikes(m.User.Id, r.Form["postId"][0], "-1")
+		}
 	}
 	m = dbconnections.GetMegaDataValues(r, "Forum")
 

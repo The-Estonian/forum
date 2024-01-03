@@ -70,11 +70,6 @@ body {
 .container_register_categories_label {
   margin: 0.5rem;
 }
-.container input[type=submit] {
-  padding: 0.5rem;
-  margin: auto;
-  margin-top: 0.5rem;
-}
 .container_errors {
   color: white;
   margin: auto;

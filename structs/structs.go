@@ -8,6 +8,7 @@ type Post struct {
 	Created    string
 	Username   string
 	LikeRating string
+	CurrUserRate string
 	Categories []Category
 }
 
@@ -22,6 +23,8 @@ type Comment struct {
 	UserId  string
 	Comment string
 	Created string
+	Likes string
+	CurrUserRate string
 }
 
 type User struct {
@@ -37,8 +40,15 @@ type AccessRights struct {
 type PostLikes struct {
 	Id       string
 	Post     string
-	User     string
+	UserId     string
 	PostLike string
+}
+
+type CommentLikes struct {
+	Id       string
+	CommentId    string
+	UserId     string
+	CommentLike string
 }
 
 type MegaData struct {
@@ -46,6 +56,7 @@ type MegaData struct {
 	Post        Post
 	Categories  []Category
 	AllPosts    []Post
+	AllPostLikes []PostLikes
 	AllComments []Comment
 	Access      AccessRights
 	Errors      []string
