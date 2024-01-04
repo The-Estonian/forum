@@ -31,8 +31,8 @@ func HandlePostContent(w http.ResponseWriter, r *http.Request) {
 				dbconnections.InsertComment(r.Form["PostId"][0], m.User.Id, r.Form["createPostComment"][0])
 			}
 		}
-		userCurrLike := dbconnections.GetCommentLike(m.User.Id, r.Form["CommentId"][0])
 		if key == "like" {
+			userCurrLike := dbconnections.GetCommentLike(m.User.Id, r.Form["CommentId"][0])
 			if userCurrLike == "1" {
 				dbconnections.SetCommentLikes(m.User.Id, r.Form["CommentId"][0], "0")
 			} else {
@@ -40,6 +40,7 @@ func HandlePostContent(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if key == "dislike" {
+			userCurrLike := dbconnections.GetCommentLike(m.User.Id, r.Form["CommentId"][0])
 			if userCurrLike == "-1" {
 				dbconnections.SetCommentLikes(m.User.Id, r.Form["CommentId"][0], "0")
 			} else {

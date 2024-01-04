@@ -29,7 +29,6 @@ func main() {
 	mux.HandleFunc("/post", urlHandlers.HandlePost)
 	mux.HandleFunc("/postcontent", urlHandlers.HandlePostContent)
 
-
 	fmt.Println("Server hosted at: http://localhost:" + "8080")
 	fmt.Println("To Kill Server press Ctrl+C")
 
