@@ -93,4 +93,21 @@ body {
   border: 1px solid white;
   padding: 0.5rem 1rem;
   margin: 3px;
+}
+.container_content_categories {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  justify-content: left;
+  margin: 1rem 0;
+}
+.container_content_categories_form {
+  margin: 0 0.3rem;
+}
+.container_content_categories_item {
+  margin: 0 0.3rem;
+}
+.container_content_categories p {
+  margin: 0 0.3rem;
 }/*# sourceMappingURL=main.css.map */

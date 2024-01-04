@@ -35,7 +35,7 @@
       <div class="container_content">
         <form method="post" action="/post" class="container_register">
           <div class="container_register_categories">
-            {{range $item := .Categories}}
+            {{range $item := .CategoryChoice}}
             <label
               class="container_register_categories_label"
               for="{{$item.Id}}"

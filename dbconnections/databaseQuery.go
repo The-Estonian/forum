@@ -193,6 +193,7 @@ func GetAllPosts(postId, userId string) []structs.Post {
 		layout := "2006-01-02 15:04:05"
 		postDate, _ := time.Parse(layout, post.Created)
 		post.Created = time.Since(postDate).Truncate(time.Second).String()
+		post.Categories = GetAllCategoriesForPost(post.Id)
 		allPosts = append(allPosts, post)
 	}
 	defer rows.Close()
@@ -208,25 +209,29 @@ func GetAllPosts(postId, userId string) []structs.Post {
 }
 
 // Returns a struct that contains data from one row in post database
-func GetOnePost(data string) structs.Post {
+func GetOnePost(postId string) structs.Post {
 	db := DbConnection()
-	posts := db.QueryRow("SELECT posts.id, posts.title, users.username, posts.post, posts.created FROM posts INNER JOIN users ON posts.user = users.id WHERE posts.id=?", data)
+	posts := db.QueryRow("SELECT posts.id, posts.title, users.username, posts.post, posts.created FROM posts INNER JOIN users ON posts.user = users.id WHERE posts.id=?", postId)
+	defer db.Close()
 	var post structs.Post
 	if err := posts.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created); err != nil {
 		fmt.Println(err)
 	}
-	categoryList, _ := db.Query("SELECT category.id, category.category FROM post_category_list INNER JOIN category ON category.id = post_category_list.post_category WHERE post_id=?", data)
-	defer db.Close()
+	post.Categories = GetAllCategoriesForPost(postId)
+	return post
+}
 
+func GetAllCategoriesForPost(postId string) []structs.Category {
+	db := DbConnection()
+	categoryList, _ := db.Query("SELECT category.id, category.category FROM post_category_list INNER JOIN category ON category.id = post_category_list.post_category WHERE post_id=?", postId)
+	var allCats []structs.Category
 	for categoryList.Next() {
 		var cats structs.Category
 		categoryList.Scan(&cats.Id, &cats.Category)
-		if cats.Category != "Default" {
-			post.Categories = append(post.Categories, cats)
-		}
+		allCats = append(allCats, cats)
 	}
 	categoryList.Close()
-	return post
+	return allCats
 }
 
 // Inserts into posts and post_category_list user inserted data
@@ -324,7 +329,7 @@ func GetAllCategories() []structs.Category {
 		allCategories = append(allCategories, category)
 	}
 	defer data.Close()
-	return allCategories[1:]
+	return allCategories
 }
 
 func SetPostLikes(userId, postId, like string) {
@@ -429,12 +434,14 @@ func GetMegaDataValues(r *http.Request, handler string) structs.MegaData {
 	}
 	if handler == "Forum" {
 		m.AllPosts = GetAllPosts(postId, userId)
+		m.CategoryChoice = GetAllCategories()
 	}
 	if handler == "Post" {
-		m.Categories = GetAllCategories()
+		m.CategoryChoice = GetAllCategories()[1:]
 	}
 	if handler == "PostContent" {
 		m.AllPosts = GetAllPosts(postId, userId)
+		m.AllPosts[0].Categories = m.AllPosts[0].Categories[1:]
 		m.AllComments = GetAllComments(postId, userId)
 	}
 	return m

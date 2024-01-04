@@ -57,7 +57,7 @@ func CreateCategory() {
 	validateData.CheckErr(err)
 	db.Exec("CREATE TABLE `category` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `category` VARCHAR(255) NOT NULL)")
 
-	for _, v := range []string{"Default", "Potato", "Carrot", "Tomatoe", "Apple", "Orange"} {
+	for _, v := range []string{"All", "Potato", "Carrot", "Tomatoe", "Apple", "Orange"} {
 		_, err := db.Exec("INSERT INTO category (category) VALUES (?)", v)
 		if err != nil {
 			fmt.Println(err)

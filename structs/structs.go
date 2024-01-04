@@ -15,6 +15,7 @@ type Post struct {
 type Category struct {
 	Id       string
 	Category string
+	Selected string
 }
 
 type Comment struct {
@@ -55,6 +56,7 @@ type MegaData struct {
 	User        User
 	Post        Post
 	Categories  []Category
+	CategoryChoice []Category
 	AllPosts    []Post
 	AllPostLikes []PostLikes
 	AllComments []Comment

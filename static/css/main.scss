@@ -86,5 +86,19 @@ body {
         margin: 3px;
       }
     }
+    &_categories {
+      @include flexRow;
+      justify-content: left;
+      margin: 1rem 0;
+      &_form{
+        margin: 0 0.3rem;
+      }
+      &_item{
+        margin: 0 0.3rem;
+      }
+      p{
+        margin:0 0.3rem;
+      }
+    }
   }
 }

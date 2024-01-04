@@ -33,11 +33,18 @@
         </span>
       </div>
       <div class="container_content">
-        {{range $cat := .AllPosts}}
-          {{range $singleCat := $cat.Categories}}
-            <p>{{$singleCat.Category}}</p>
+        <div class="container_content_categories">
+          <span>Post Categories: </span>
+          {{range $cat := .AllPosts}}
+          {{if $cat.Categories}}
+            {{range $singleCat := $cat.Categories}}
+              <p class="container_content_categories_item">{{$singleCat.Category}}</p>
+            {{end}}
+            {{else}}
+            <p>None</p>
+            {{end}}
           {{end}}
-        {{end}}
+        </div>
         <a href="/">
             <button class="back-button">Back to forum</button>
         </a>
