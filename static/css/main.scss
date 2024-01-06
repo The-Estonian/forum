@@ -28,14 +28,22 @@ body {
 }
 
 .container {
-  @include flexCol;
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  min-height: 100vh;
   color: white;
+  &_back {
+    margin:0 auto;
+  }
+  &_login-title {
+    margin: 1rem auto;
+    font-size: 2rem;
+  }
   &_menu {
     @include flexRow;
     width: 100%;
     padding: 0.5rem;
-    margin-bottom: auto;
     &_button {
       @include flexCol;
       color: white;
@@ -60,7 +68,8 @@ body {
     }
     margin-bottom: auto;
     &_categories {
-      @include flexRow;
+      display: flex;
+      flex-direction: row;
       &_label {
         margin: 0.5rem;
       }
@@ -77,31 +86,65 @@ body {
     margin: auto;
   }
   &_content {
-    @include flexCol;
-    margin-bottom: auto;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    margin-top: 0;
     width: 100%;
+    &_form {
+      margin: auto;
+    }
     &_post-link {
       all: unset;
       width: 75%;
       color: white;
       cursor: pointer;
+      margin: auto;
       &_container {
-        @include flexRow;
-        justify-content: space-between;
+        display: flex;
+        flex-direction: row;
         box-shadow: rgba(255, 255, 255, 0.664) 0px 2px 8px 0px;
         border: 1px solid white;
         padding: 0.5rem 1rem;
-        margin: 3px;
+        margin: auto;
+        span{
+          padding: 1.1rem;
+        }
+        &_like{
+          margin:auto 0;
+          margin-left: auto;
+        }
+        span {
+          margin: auto;
+        }
+        &_col {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          margin: auto;
+          padding: 0.5rem;
+          max-width: fit-content;
+          &_title{
+            margin:auto 0;
+          }
+        }
       }
     }
     &_categories {
-      @include flexCol;
-      margin: 1rem;
-      span{
-        margin-bottom: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      margin: auto;
+      span {
+        margin: auto;
+        margin-top: 0.5rem;
       }
-      &_row{
+      &_row {
         @include flexRow;
+        margin: 1rem;
+        &_column {
+          @include flexCol;
+          align-items: flex-start;
+        }
       }
       &_form {
         margin: 0 0.3rem;
@@ -129,6 +172,9 @@ body {
         cursor: pointer;
       }
     }
+    &_no-comments{
+      margin: auto;
+    }
   }
   input[type='submit'] {
     background: transparent;
@@ -150,4 +196,16 @@ body {
 
 #selected {
   border: 1px solid red;
+}
+
+#back {
+  background: transparent;
+  border: 1px solid transparent;
+  color: white;
+  box-shadow: rgba(255, 255, 255, 0.4) 0px 2px 8px 0px;
+  border-radius: 2px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
 }

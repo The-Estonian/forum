@@ -70,7 +70,9 @@
               <input style="border: 2px solid transparent;" type="submit" name="like" value="Like" />
               {{end}}
             </label>
+            {{end}}
             <span>Rating: {{$item.LikeRating}}</span>
+            {{if eq $.Access.AccessRight "2" }}
             <label for="dislike">
               <input type="hidden" name="postId" value="{{$item.Id}}" />
               {{if eq $item.CurrUserRate "-1"}}

@@ -15,10 +15,16 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  margin: auto;
+  min-height: 100vh;
   color: white;
+}
+.container_back {
+  margin: 0 auto;
+}
+.container_login-title {
+  margin: 1rem auto;
+  font-size: 2rem;
 }
 .container_menu {
   display: flex;
@@ -27,7 +33,6 @@ body {
   align-items: center;
   width: 100%;
   padding: 0.5rem;
-  margin-bottom: auto;
 }
 .container_menu_button {
   display: flex;
@@ -64,8 +69,6 @@ body {
 .container_register_categories {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
 }
 .container_register_categories_label {
   margin: 0.5rem;
@@ -89,43 +92,72 @@ body {
 .container_content {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: auto;
+  margin: auto;
+  margin-top: 0;
   width: 100%;
+}
+.container_content_form {
+  margin: auto;
 }
 .container_content_post-link {
   all: unset;
   width: 75%;
   color: white;
   cursor: pointer;
+  margin: auto;
 }
 .container_content_post-link_container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  justify-content: space-between;
   box-shadow: rgba(255, 255, 255, 0.664) 0px 2px 8px 0px;
   border: 1px solid white;
   padding: 0.5rem 1rem;
-  margin: 3px;
+  margin: auto;
+}
+.container_content_post-link_container span {
+  padding: 1.1rem;
+}
+.container_content_post-link_container_like {
+  margin: auto 0;
+  margin-left: auto;
+}
+.container_content_post-link_container span {
+  margin: auto;
+}
+.container_content_post-link_container_col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: auto;
+  padding: 0.5rem;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+}
+.container_content_post-link_container_col_title {
+  margin: auto 0;
 }
 .container_content_categories {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 1rem;
+  margin: auto;
 }
 .container_content_categories span {
-  margin-bottom: 0.5rem;
+  margin: auto;
+  margin-top: 0.5rem;
 }
 .container_content_categories_row {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  margin: 1rem;
+}
+.container_content_categories_row_column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-items: flex-start;
 }
 .container_content_categories_form {
   margin: 0 0.3rem;
@@ -152,6 +184,9 @@ body {
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
+.container_content_no-comments {
+  margin: auto;
+}
 .container input[type=submit] {
   background: transparent;
   border: 1px solid transparent;
@@ -171,4 +206,16 @@ body {
 
 #selected {
   border: 1px solid red;
+}
+
+#back {
+  background: transparent;
+  border: 1px solid transparent;
+  color: white;
+  box-shadow: rgba(255, 255, 255, 0.4) 0px 2px 8px 0px;
+  border-radius: 2px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
 }/*# sourceMappingURL=main.css.map */
