@@ -3,12 +3,12 @@ package dbconnections
 import (
 	"database/sql"
 	"fmt"
+	"forum/helpers"
+	"forum/structs"
+	"forum/validateData"
 	"net/http"
 	"net/url"
 	"time"
-
-	"forum/structs"
-	"forum/validateData"
 )
 
 // Open and Close database connection. Returns database connection.
@@ -23,11 +23,17 @@ func RegisterUser(username, email, password string) (bool, bool) {
 	db := DbConnection()
 	usernameCheck := CheckValueFromDB("username", username)
 	emailCheck := CheckValueFromDB("email", email)
+	hashpsw, err := helpers.HashPassword(password)
+	if err != nil {
+		fmt.Println("Error on password hashing", err)
+	}
 	if !usernameCheck && !emailCheck {
-		_, err := db.Exec("INSERT INTO users(username, password, email) VALUES(?, ?, ?)", username, password, email)
+		_, err := db.Exec("INSERT INTO users(username, password, email) VALUES(?, ?, ?)", username, hashpsw, email)
 		validateData.CheckErr(err)
 		fmt.Println("New user added to the DB")
-		SetAccessRight(GetID(username), "2")
+		if username != "Guest" && username != "Admin" {
+			SetAccessRight(GetID(username), "2")
+		}
 		fmt.Println("Access granted to user", GetID(username))
 	}
 	defer db.Close()
@@ -37,7 +43,7 @@ func RegisterUser(username, email, password string) (bool, bool) {
 // Returns True if user inserted credentials are in database.
 func LoginUser(username, password string) bool {
 	getPassword := CheckPassword(username)
-	return getPassword == password
+	return helpers.CheckPasswordHash(password, getPassword)
 }
 
 // Deletes Cookie from session database

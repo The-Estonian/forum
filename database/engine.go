@@ -53,5 +53,11 @@ func Engine() {
 		fmt.Println("Comments Table Created!")
 
 		fmt.Println("Full Database Regeneration Successfull!")
+		fmt.Println("Creating dummy users")
+
+		dbconnections.RegisterUser("Guest", "guest@admin.com", "55guest55")
+		dbconnections.SetAccessRight(dbconnections.GetID("Guest"), "1")
+		dbconnections.RegisterUser("Admin", "admin@admin.com", "admin")
+		dbconnections.SetAccessRight(dbconnections.GetID("Admin"), "4")
 	}
 }
