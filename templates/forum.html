@@ -32,18 +32,20 @@
       </div>
       <div class="container_content">
         <div class="container_content_categories">
-          {{range $cat := .CategoryChoice}}
-          <form class="container_content_categories_form" action="/" method="post">
-              <label for={{$cat.Category}}>
-                <input type="hidden" name="postId" value={{$cat.Category}} />
-                {{if eq $cat.Selected "true"}}
-                <input  style="border: 2px solid red;" type="submit" name="Category" value={{$cat.Category}} />
-                {{else}}
-                <input  style="border: 2px solid transparent;" type="submit" name="Category" value={{$cat.Category}} />
-                {{end}}
-              </label>
-          </form>
-          {{end}}
+          <div class="container_content_categories_row">
+            {{range $cat := .CategoryChoice}}
+            <form class="container_content_categories_form" action="/" method="post">
+                <label for={{$cat.Category}}>
+                  <input type="hidden" name="postId" value={{$cat.Category}} />
+                  {{if eq $cat.Selected "true"}}
+                  <input id="selected" type="submit" name="Category" value={{$cat.Category}} />
+                  {{else}}
+                  <input type="submit" name="Category" value={{$cat.Category}} />
+                  {{end}}
+                </label>
+            </form>
+            {{end}}
+          </div>
         </div>
         {{range $item := .AllPosts}}
         <a
@@ -51,7 +53,7 @@
           href="/postcontent?PostId={{$item.Id}}"
         >
           {{if eq $item.User $.User.Id}}
-            <div class="container_content_post-link_container" style="background-color: black; color: azure;">
+            <div class="container_content_post-link_container" style="background: linear-gradient(36deg, rgba(141, 255, 141, 0.658), transparent, transparent); color: azure;">
           {{else}}
             <div class="container_content_post-link_container">
           {{end}}

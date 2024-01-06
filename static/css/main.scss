@@ -66,15 +66,23 @@ body {
       }
     }
   }
+  &_login {
+    @include flexCol;
+    label {
+      @include flexCol;
+    }
+  }
   &_errors {
     color: white;
     margin: auto;
   }
   &_content {
+    @include flexCol;
     margin-bottom: auto;
-    width: 75%;
+    width: 100%;
     &_post-link {
       all: unset;
+      width: 75%;
       color: white;
       cursor: pointer;
       &_container {
@@ -87,18 +95,59 @@ body {
       }
     }
     &_categories {
-      @include flexRow;
-      justify-content: left;
-      margin: 1rem 0;
-      &_form{
+      @include flexCol;
+      margin: 1rem;
+      span{
+        margin-bottom: 0.5rem;
+      }
+      &_row{
+        @include flexRow;
+      }
+      &_form {
         margin: 0 0.3rem;
       }
-      &_item{
+      &_item {
+        background: transparent;
+        border: 1px solid transparent;
+        color: white;
+        box-shadow: rgba(255, 255, 255, 0.4) 0px 2px 8px 0px;
+        border-radius: 2px;
+        padding: 0.5rem 1rem;
+        margin: 0.5rem;
+        font-size: 1rem;
+      }
+      p {
         margin: 0 0.3rem;
       }
-      p{
-        margin:0 0.3rem;
+      input[type='submit'] {
+        background: transparent;
+        border: 1px solid transparent;
+        color: white;
+        box-shadow: rgba(255, 255, 255, 0.4) 0px 2px 8px 0px;
+        border-radius: 2px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
       }
     }
   }
+  input[type='submit'] {
+    background: transparent;
+    border: 1px solid transparent;
+    color: white;
+    box-shadow: rgba(255, 255, 255, 0.4) 0px 2px 8px 0px;
+    border-radius: 2px;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  input[type='text'],
+  input[type='email'],
+  input[type='password'] {
+    padding: 0.5rem 1rem;
+  }
+}
+
+#selected {
+  border: 1px solid red;
 }

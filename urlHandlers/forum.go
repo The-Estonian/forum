@@ -38,6 +38,7 @@ func HandleForum(w http.ResponseWriter, r *http.Request) {
 		if executeCat != nil {
 			fmt.Println("Template error: ", executeCat)
 		}
+		return
 	}
 
 	userCurrLike := dbconnections.GetPostLike(m.User.Id, r.Form["postId"][0])

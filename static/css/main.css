@@ -70,16 +70,33 @@ body {
 .container_register_categories_label {
   margin: 0.5rem;
 }
+.container_login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.container_login label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 .container_errors {
   color: white;
   margin: auto;
 }
 .container_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin-bottom: auto;
-  width: 75%;
+  width: 100%;
 }
 .container_content_post-link {
   all: unset;
+  width: 75%;
   color: white;
   cursor: pointer;
 }
@@ -96,18 +113,62 @@ body {
 }
 .container_content_categories {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+}
+.container_content_categories span {
+  margin-bottom: 0.5rem;
+}
+.container_content_categories_row {
+  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  justify-content: left;
-  margin: 1rem 0;
 }
 .container_content_categories_form {
   margin: 0 0.3rem;
 }
 .container_content_categories_item {
-  margin: 0 0.3rem;
+  background: transparent;
+  border: 1px solid transparent;
+  color: white;
+  box-shadow: rgba(255, 255, 255, 0.4) 0px 2px 8px 0px;
+  border-radius: 2px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  font-size: 1rem;
 }
 .container_content_categories p {
   margin: 0 0.3rem;
+}
+.container_content_categories input[type=submit] {
+  background: transparent;
+  border: 1px solid transparent;
+  color: white;
+  box-shadow: rgba(255, 255, 255, 0.4) 0px 2px 8px 0px;
+  border-radius: 2px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+.container input[type=submit] {
+  background: transparent;
+  border: 1px solid transparent;
+  color: white;
+  box-shadow: rgba(255, 255, 255, 0.4) 0px 2px 8px 0px;
+  border-radius: 2px;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.container input[type=text],
+.container input[type=email],
+.container input[type=password] {
+  padding: 0.5rem 1rem;
+}
+
+#selected {
+  border: 1px solid red;
 }/*# sourceMappingURL=main.css.map */
