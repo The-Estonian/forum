@@ -192,13 +192,13 @@ func GetAllPosts(postId, userId string) []structs.Post {
 	for rows.Next() {
 		var post structs.Post
 		if err := rows.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created, &post.Username, &post.LikeRating); err != nil {
-			fmt.Println("Closing connection")
+			fmt.Println("Error: GetAllPosts SQL Query", err)
 			rows.Close()
 			return allPosts
 		}
-		layout := "2006-01-02 15:04:05"
-		postDate, _ := time.Parse(layout, post.Created)
-		post.Created = time.Since(postDate).Truncate(time.Second).String()
+		// layout := "2006-01-02 15:04:05"
+		// postDate, _ := time.Parse(layout, post.Created.String())
+		// post.Created = time.Since(postDate).Truncate(time.Second).String()
 		post.Categories = GetAllCategoriesForPost(post.Id)
 		allPosts = append(allPosts, post)
 	}

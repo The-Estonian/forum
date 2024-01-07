@@ -85,14 +85,13 @@
           {{range $item := .AllComments}}
           <div class="container_content_post-link_container">
             <div class="container_content_post-link_container_col_title">
-              <p>Comment: </p>
-              <p>From: </p>
-              <p>Time: </p>
+              <p>By {{$item.UserId}}</p>
+              <p>{{$item.Created}}</p>
             </div>
             <div class="container_content_post-link_container_col">
               <p>{{$item.Comment}}</p>
-              <p>By {{$item.UserId}}</p>
-              <p>Created on: {{$item.Created}}</p>
+              
+              
   
             </div>
             

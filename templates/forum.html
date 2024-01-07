@@ -45,6 +45,16 @@
                 </label>
             </form>
             {{end}}
+            <form class="container_content_categories_form_filter" action="/" method="post">
+              <!-- <label for="filterLike">
+                <input type="hidden" name="filterLike">
+              </label>
+              <label for="filterDates">
+                <input type="hidden" name="filterDates">
+              </label> -->
+              <input type="submit" name="filter" value="Likes" />
+              <input type="submit" name="filter" value="Dates" />
+            </form>
           </div>
         </div>
         {{range $item := .AllPosts}}
@@ -59,7 +69,7 @@
           {{end}}
             <span> {{$item.Title}} </span>
             <span> posted by {{$item.Username}} </span>
-            <span> {{$item.Created}} ago </span>
+            <span> {{$item.Created}}</span>
           {{if eq $.Access.AccessRight "2" }}
           <form action="/" method="post">
             <label for="like">
