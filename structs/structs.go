@@ -1,15 +1,16 @@
 package structs
 
 type Post struct {
-	Id         string
-	Title      string
-	User       string
-	Post       string
-	Created    string
-	Username   string
-	LikeRating string
+	Id           string
+	Title        string
+	User         string
+	Post         string
+	Created      string
+	Username     string
+	LikeRating   string
 	CurrUserRate string
-	Categories []Category
+	Categories   []Category
+	Media        string
 }
 
 type Category struct {
@@ -19,12 +20,12 @@ type Category struct {
 }
 
 type Comment struct {
-	Id      string
-	PostId  string
-	UserId  string
-	Comment string
-	Created string
-	Likes string
+	Id           string
+	PostId       string
+	UserId       string
+	Comment      string
+	Created      string
+	Likes        string
 	CurrUserRate string
 }
 
@@ -41,25 +42,25 @@ type AccessRights struct {
 type PostLikes struct {
 	Id       string
 	Post     string
-	UserId     string
+	UserId   string
 	PostLike string
 }
 
 type CommentLikes struct {
-	Id       string
-	CommentId    string
-	UserId     string
+	Id          string
+	CommentId   string
+	UserId      string
 	CommentLike string
 }
 
 type MegaData struct {
-	User        User
-	Post        Post
-	Categories  []Category
+	User           User
+	Post           Post
+	Categories     []Category
 	CategoryChoice []Category
-	AllPosts    []Post
-	AllPostLikes []PostLikes
-	AllComments []Comment
-	Access      AccessRights
-	Errors      []string
+	AllPosts       []Post
+	AllPostLikes   []PostLikes
+	AllComments    []Comment
+	Access         AccessRights
+	Errors         []string
 }

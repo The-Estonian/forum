@@ -51,6 +51,9 @@ func Engine() {
 
 		dbconnections.CreateComments()
 		fmt.Println("Comments Table Created!")
+		
+		dbconnections.CreateMedia()
+		fmt.Println("Media Table Created!")
 
 		fmt.Println("Full Database Regeneration Successfull!")
 		fmt.Println("Creating dummy users")

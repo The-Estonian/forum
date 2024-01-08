@@ -223,6 +223,7 @@ func GetOnePost(postId string) structs.Post {
 	if err := posts.Scan(&post.Id, &post.Title, &post.User, &post.Post, &post.Created); err != nil {
 		fmt.Println(err)
 	}
+	post.Media = GetMedia(postId)
 	post.Categories = GetAllCategoriesForPost(postId)
 	return post
 }
@@ -241,7 +242,7 @@ func GetAllCategoriesForPost(postId string) []structs.Category {
 }
 
 // Inserts into posts and post_category_list user inserted data
-func InsertMessage(userForm url.Values, userId string) {
+func InsertMessage(userForm url.Values, userId, mediaName string) {
 	db := DbConnection()
 	var inputTitle string
 	var inputMessage string
@@ -257,7 +258,7 @@ func InsertMessage(userForm url.Values, userId string) {
 		}
 	}
 
-	var data int
+	var data string
 	err := db.QueryRow("INSERT INTO posts (title, user, post) VALUES (?, ?, ?) RETURNING id", inputTitle, userId, inputMessage).Scan(&data)
 	if err != nil {
 		fmt.Println(err)
@@ -266,6 +267,10 @@ func InsertMessage(userForm url.Values, userId string) {
 	_, err = db.Exec("INSERT INTO post_likes (post, user, post_like) VALUES (?, ?, ?)", data, "1", "0")
 	if err != nil {
 		fmt.Println(err)
+	}
+
+	if len(mediaName) > 0 {
+		SetMedia(data, mediaName)
 	}
 
 	for _, v := range catArray {
@@ -422,6 +427,22 @@ func GetCommentLike(userId, commentId string) string {
 	db.QueryRow("SELECT comment_like FROM comment_likes where user=? and comment=? ", userId, commentId).Scan(&rating)
 	defer db.Close()
 	return rating
+}
+
+func SetMedia(postId, imageName string) {
+	db := DbConnection()
+	_, err := db.Exec("INSERT INTO media (post_id, image_name) VALUES (?, ?)", postId, imageName)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func GetMedia(postId string) string {
+	db := DbConnection()
+	var imageName string
+	db.QueryRow("SELECT image_name FROM media where post_id=? ", postId).Scan(&imageName)
+	defer db.Close()
+	return imageName
 }
 
 func GetMegaDataValues(r *http.Request, handler string) structs.MegaData {

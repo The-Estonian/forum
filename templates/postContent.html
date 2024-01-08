@@ -50,12 +50,12 @@
             {{end}}
           </div>
           <div class="container_content_categories_row">
+            {{$postItem := index .AllPosts 0}}
+            {{if $postItem.Media}}
             <div class="container_content_categories_row_column">
-              <p>Username: </p>
-              <p>Post Title: </p>
-              <p>Post Message: </p>
-              <p>Post Created on: </p>
+              <img style="height: 10rem; width: 10rem; border-radius: 0.5rem; margin: 0.5rem;" src="static/images/{{$postItem.Media}}" alt="picture">
             </div>
+            {{end}}
             <div class="container_content_categories_row_column">
               {{$item := index .AllPosts 0}}
               <p>{{$item.User}}</p>
@@ -90,11 +90,7 @@
             </div>
             <div class="container_content_post-link_container_col">
               <p>{{$item.Comment}}</p>
-              
-              
-  
             </div>
-            
             {{$postItem := index $.AllPosts 0}}
             {{if eq $.Access.AccessRight "2" }}
             <div class="container_content_post-link_container_like">
