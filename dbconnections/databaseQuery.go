@@ -68,10 +68,23 @@ func ApplyHash(user, hash string) {
 // Returns ID if username exists in the users database
 func GetID(username string) string {
 	db := DbConnection()
-	query := db.QueryRow("SELECT id FROM users WHERE username=?", username).Scan(&username)
+	var userId string
+	query := db.QueryRow("SELECT id FROM users WHERE username=?", username).Scan(&userId)
 	defer db.Close()
 	if query != nil {
 		fmt.Println("Didn't find username with that name to return ID")
+		fmt.Println("Error code: ", query)
+	}
+	return userId
+}
+
+func GetUsername(email string) string {
+	db := DbConnection()
+	var username string
+	query := db.QueryRow("SELECT username FROM users WHERE email=?", email).Scan(&username)
+	defer db.Close()
+	if query != nil {
+		fmt.Println("GetUsername: Didn't find username with that email")
 		fmt.Println("Error code: ", query)
 	}
 	return username
@@ -86,7 +99,7 @@ func GetUserInfo(id string) structs.User {
 	dump = ""
 	defer db.Close()
 	if query != nil {
-		fmt.Println("Didn't find userId with that id")
+		fmt.Println("GetUserInfo: Didn't find userId with that id")
 		fmt.Println("Error code: ", query)
 	}
 	return userInfo
@@ -99,7 +112,7 @@ func GetAccessRight(id string) structs.AccessRights {
 	query := db.QueryRow("SELECT user_access FROM user_access WHERE user=?", id).Scan(&userAccess.AccessRight)
 	defer db.Close()
 	if query != nil {
-		fmt.Println("Didn't find user with that id")
+		fmt.Println("GetAccessRight: Didn't find user with that id")
 		fmt.Println("Error code: ", query)
 	}
 	return userAccess

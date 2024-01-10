@@ -7,6 +7,7 @@ import (
 	"forum/validateData"
 	"html/template"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,6 +23,25 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		template.Execute(w, m)
+		return
+	}
+
+	r.ParseMultipartForm(0)
+	if r.FormValue("loginType") == "google" {
+		authURL := fmt.Sprintf(
+			"https://accounts.google.com/o/oauth2/auth?client_id=%s&redirect_uri=%s&response_type=code&scope=email&state=%s",
+			url.QueryEscape("113897564750-m48e0sfio9uiei7k9v6aipli8526q97t.apps.googleusercontent.com"),
+			url.QueryEscape("https://localhost:8080/googleAuth"),
+			url.QueryEscape("ForumAuthentication"))
+		http.Redirect(w, r, authURL, http.StatusTemporaryRedirect)
+		return
+	}
+	if r.FormValue("loginType") == "github" {
+		clientID := "c1fe0985284e0a15a4c7"
+		redirectURI := "https://localhost:8080/githubAuth"
+		authURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s", url.QueryEscape(clientID), url.QueryEscape(redirectURI))
+		fmt.Println(authURL)
+		http.Redirect(w, r, authURL, http.StatusTemporaryRedirect)
 		return
 	}
 

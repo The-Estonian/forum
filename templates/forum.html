@@ -28,7 +28,13 @@
           <span>Create Post</span>
         </a>
         {{end}}
-        <span class="container_menu_button"> {{.User.Username}} </span>
+        {{if eq .Access.AccessRight "1" }}
+        <span class="container_menu_button">Guest</span>
+        {{else}}
+        <a class="container_menu_button" href="/profile">
+          <span > {{.User.Username}} </span>
+        </a>
+        {{end}}
       </div>
       <div class="container_content">
         <div class="container_content_categories">

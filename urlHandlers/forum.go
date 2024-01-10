@@ -6,7 +6,6 @@ import (
 	"forum/helpers"
 	"html/template"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -15,10 +14,10 @@ func HandleForum(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Template not found!"+err.Error(), http.StatusInternalServerError)
 	}
-	if r.URL.Path != "/" && r.URL.Path != "/register" && r.URL.Path != "/login" && r.URL.Path != "/logout" && r.URL.Path != "/post" && r.URL.Path != "/postcontent" && !strings.HasPrefix(r.URL.Path, "/postcontent?PostId=" ) {
-		http.Error(w, "Bad Request: 404", http.StatusNotFound)
-		return
-	}
+	// if r.URL.Path != "/" && r.URL.Path != "/register" && r.URL.Path != "/login" && r.URL.Path != "/logout" && r.URL.Path != "/post" && r.URL.Path != "/postcontent" && r.URL.Path != "/profile" && r.URL.Path != "/googleAuth" && r.URL.Path != "/githubAuth" && !strings.HasPrefix(r.URL.Path, "/postcontent?PostId=") {
+	// 	http.Error(w, "Bad Request: 404", http.StatusNotFound)
+	// 	return
+	// }
 
 	m := dbconnections.GetMegaDataValues(r, "Forum")
 

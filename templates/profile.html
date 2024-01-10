@@ -27,39 +27,19 @@
         <a class="container_menu_button" href="/post">
           <span>Create Post</span>
         </a>
-        {{end}}
-        {{if eq .Access.AccessRight "1" }}
+        {{end}} {{if eq .Access.AccessRight "1" }}
         <span class="container_menu_button">Guest</span>
         {{else}}
         <a class="container_menu_button" href="/profile">
-          <span > {{.User.Username}} </span>
+          <span> {{.User.Username}} </span>
         </a>
         {{end}}
       </div>
-      <p class="container_login-title">Please login!</p>
-      <form method="post" action="/login" class="container_login">
-        <label for="username">
-          <span>Username</span>
-          <input type="text" name="username" id="username" />
-        </label>
-        <label for="password">
-          <span>Password</span>
-          <input type="password" name="password" id="password" />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
-      <form action="/login" method="post" class="container_login">
-        <input type="hidden" name="loginType" value="google" />
-        <button type="submit">Login with Google</button>
-      </form>
-      <form action="/login" method="post" class="container_login">
-        <input type="hidden" name="loginType" value="github" />
-        <button type="submit">Login with GitHub</button>
-      </form>
-      <div class="container_errors">
-        {{if .Errors}} {{range $err := .Errors}}
-        <p>{{$err}}</p>
-        {{end}} {{end}}
+      <div class="container_content">
+        <span>User: {{.User.Id}}</span>
+        <span>Username: {{.User.Username}}</span>
+        <span>Email: {{.User.Email}}</span>
+        <span>AccessRight: {{.Access.AccessRight}}</span>
       </div>
     </div>
   </body>
