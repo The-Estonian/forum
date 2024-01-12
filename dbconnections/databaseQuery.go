@@ -30,7 +30,7 @@ func RegisterUser(username, email, password string) (bool, bool) {
 	if !usernameCheck && !emailCheck {
 		_, err := db.Exec("INSERT INTO users(username, password, email) VALUES(?, ?, ?)", username, hashpsw, email)
 		validateData.CheckErr(err)
-		fmt.Println("New user added to the DB")
+		fmt.Println(username, " added to the DB")
 		if username != "Guest" && username != "Admin" {
 			SetAccessRight(GetID(username), "2")
 		}

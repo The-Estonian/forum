@@ -37,10 +37,10 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.FormValue("loginType") == "github" {
-		clientID := "c1fe0985284e0a15a4c7"
-		redirectURI := "https://localhost:8080/githubAuth"
-		authURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s", url.QueryEscape(clientID), url.QueryEscape(redirectURI))
-		fmt.Println(authURL)
+		authURL := fmt.Sprintf("https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&scope=user:email&state=%s",
+			url.QueryEscape("c1fe0985284e0a15a4c7"),
+			url.QueryEscape("https://localhost:8080/githubAuth"),
+			url.QueryEscape("ForumAuthentication"))
 		http.Redirect(w, r, authURL, http.StatusTemporaryRedirect)
 		return
 	}

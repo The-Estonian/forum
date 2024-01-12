@@ -18,6 +18,12 @@ func HandleRegister(w http.ResponseWriter, r *http.Request) {
 
 	m := dbconnections.GetMegaDataValues(r, "Register")
 
+	if r.URL.Query().Get("notRegistered") == "true" {
+		m.Errors = []string{"Account not found, please register!"}
+		template.Execute(w, m)
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		template.Execute(w, m)
 		return

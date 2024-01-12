@@ -3,6 +3,7 @@ package urlHandlers
 import (
 	"encoding/json"
 	"fmt"
+	"forum/cleanData"
 	"forum/dbconnections"
 	"forum/helpers"
 	"io"
@@ -50,7 +51,7 @@ func HandleGoogleAuth(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Email not received")
 	}
-
+	userEmail = cleanData.CleanEmail(userEmail)
 	if len(userEmail) > 0 {
 		username := dbconnections.GetUsername(userEmail)
 		// login user
@@ -65,6 +66,8 @@ func HandleGoogleAuth(w http.ResponseWriter, r *http.Request) {
 				Expires:  exp}
 			http.SetCookie(w, cookie)
 			dbconnections.ApplyHash(dbconnections.GetID(username), id.String())
+		} else {
+			http.Redirect(w, r, "/register?notRegistered=true", http.StatusSeeOther)
 		}
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
