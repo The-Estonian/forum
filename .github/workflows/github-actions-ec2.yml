@@ -30,11 +30,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "forum"
           target: ${{ secrets.TARGET_DIR }}
-          
-      - name: Debug Information
-        run: |
-          ls -al /
-          ls -al /home
     
       - name: SSH into EC2 and start the service
         uses: appleboy/ssh-action@master
