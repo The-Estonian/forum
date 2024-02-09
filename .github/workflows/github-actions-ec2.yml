@@ -40,4 +40,5 @@ jobs:
           port: 22
           script: |
             cd ${{ secrets.TARGET_DIR }}
-            ./forum &
+            tmux has-session -t my-session && tmux kill-session -t my-session
+            tmux new-session -d -s my-session './forum'
