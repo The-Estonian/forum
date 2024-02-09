@@ -40,5 +40,9 @@ jobs:
           port: 22
           script: |
             cd ${{ secrets.TARGET_DIR }}
+            export TMUX_TMPDIR=/tmp  # Set a temporary directory for tmux
+            export TMUX=/usr/bin/tmux  # Specify the path to tmux executable
+
             tmux has-session -t my-session && tmux kill-session -t my-session
             tmux new-session -d -s my-session './forum'
+
