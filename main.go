@@ -17,7 +17,7 @@ func main() {
 	database.Engine()
 	mux := http.NewServeMux()
 	server := &http.Server{
-		Addr:    ":80",
+		Addr:    ":8080",
 		Handler: mux,
 	}
 
@@ -45,7 +45,7 @@ func main() {
 	mux.HandleFunc("/googleAuth", urlHandlers.HandleGoogleAuth)
 	mux.HandleFunc("/githubAuth", urlHandlers.HandleGithubAuth)
 
-	fmt.Println("Server hosted at: https://localhost:" + "80")
+	fmt.Println("Server hosted at: https://localhost:" + "8080")
 	fmt.Println("To Kill Server press Ctrl+C")
 
 	err := server.ListenAndServe()
