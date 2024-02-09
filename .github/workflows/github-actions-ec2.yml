@@ -29,8 +29,13 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "forum"
-          target: "/forum-root"
-
+          target: "/home"
+          
+      - name: Debug Information
+        run: |
+          ls -al /
+          ls -al /home
+    
       - name: SSH into EC2 and start the service
         uses: appleboy/ssh-action@master
         with:
@@ -39,7 +44,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            cd /forum-root
+            cd /home
             ./forum &
 
             
