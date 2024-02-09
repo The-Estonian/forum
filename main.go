@@ -17,7 +17,7 @@ func main() {
 	database.Engine()
 	mux := http.NewServeMux()
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":80",
 		Handler: mux,
 	}
 
@@ -26,12 +26,12 @@ func main() {
 	// 	Prompt:     autocert.AcceptTOS,
 	// 	HostPolicy: autocert.HostWhitelist("Domain name here!"),
 	// }
-	server.TLSConfig = &tls.Config{
-		MinVersion:               tls.VersionTLS12,
-		PreferServerCipherSuites: true,
-		InsecureSkipVerify:       true,
-		// GetCertificate:           certManager.GetCertificate,
-	}
+	// server.TLSConfig = &tls.Config{
+	// 	MinVersion:               tls.VersionTLS12,
+	// 	PreferServerCipherSuites: true,
+	// 	InsecureSkipVerify:       true,
+	// 	// GetCertificate:           certManager.GetCertificate,
+	// }
 
 	staticFiles := http.FileServer(http.Dir("./static"))
 	mux.Handle("/static/", http.StripPrefix("/static/", staticFiles))
@@ -45,9 +45,9 @@ func main() {
 	mux.HandleFunc("/googleAuth", urlHandlers.HandleGoogleAuth)
 	mux.HandleFunc("/githubAuth", urlHandlers.HandleGithubAuth)
 
-	fmt.Println("Server hosted at: https://localhost:" + "8080")
+	fmt.Println("Server hosted at: https://localhost:" + "80")
 	fmt.Println("To Kill Server press Ctrl+C")
 
-	err := server.ListenAndServeTLS("cert.pem", "key.pem")
+	err := server.ListenAndServe()
 	validateData.CheckErr(err)
 }
