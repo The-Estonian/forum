@@ -1,4 +1,9 @@
-# Fullstack project with Jinja
+# Hangout project
+Frontend: HTML, Golang Templates (jinja)
+
+Backend: Golang
+
+Database: SQLite
 
 ## Project Description
 
